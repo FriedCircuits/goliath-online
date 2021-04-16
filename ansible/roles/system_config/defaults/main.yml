@@ -1,0 +1,39 @@
+# Default system packages to install
+system_packages:
+  - locales
+  - locales-all
+  - curl
+  - gpg
+  - htop
+  - net-tools
+  - dnsutils
+  - netcat
+  - jq
+
+# Configure which packages to install.
+install:
+  brew: no
+  docker_cli: yes
+  gruntwork: yes
+  hashicorp: yes
+  kubernetes_cli: yes
+  ssh_server: yes
+  terraform: yes
+  tmux: yes
+  vim: yes
+
+# If enabled above install these tools from Hashicorp repo.
+# Terraform is installed seperately above.
+hashicorp_tools:
+  - packer
+  - vault
+  - consul
+  - nomad
+
+tfswitcher_version: 0.11.1071
+tfswitcher_repo: https://github.com/warrensbox/terraform-switcher/releases/download/{{tfswitcher_version}}/terraform-switcher_{{tfswitcher_version}}_linux_amd64.tar.gz
+
+# Kf enabled above install these packages via brew.
+# Note it seems most if not all brew packages increase image size significantly.
+brew_packages:
+  - lastpass-cli

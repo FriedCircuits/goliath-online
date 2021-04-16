@@ -1,0 +1,79 @@
+---
+- name: Hashicorp | Add APT key
+  become: yes
+  apt_key:
+    url: https://apt.releases.hashicorp.com/gpg
+    state: present
+
+- name: Hashicorp | Add repo
+  become: yes
+  apt_repository:
+    repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
+    state: present
+    update_cache: true
+
+- name: Hashicorp | Install packages
+  become: yes
+  package:
+    name: "{{ hashicorp_tools }}"
+    state: latest
+  when: install.hashicorp
+
+# https://github.com/hashicorp/vault/issues/10048
+- name: Hashicorp | Set IPC_LOCK for Vault
+  become: yes
+  command: "setcap cap_ipc_lock= /usr/bin/vault"
+  when: install.hashicorp and "vault" in hashicorp_tools
+
+- name: Hashicorp | Install terrarform
+  become: yes
+  package:
+    name: terraform
+    state: latest
+  when: install.terraform
+
+- name: Hashicorp | Download tfswitch
+  get_url:
+    url: "{{ tfswitcher_repo }}"
+    dest: "{{ home }}/.bin/"
+    mode: 0700
+  when: install.terraform
+
+- name: Hashicorp | Unarchive tfswitch
+  ansible.builtin.unarchive:
+    src: "{{ home }}/.bin/terraform-switcher_{{tfswitcher_version}}_linux_amd64.tar.gz"
+    dest: "{{ home }}/.bin/"
+    exclude:
+     - README.md
+     - LICENSE
+    mode: 0700
+    remote_src: yes
+  when: install.terraform
+
+- name: Hashicorp | Cleanup tfswitch
+  file:
+    path: "{{ home }}/.bin/terraform-switcher_{{tfswitcher_version}}_linux_amd64.tar.gz"
+    state: absent
+  when: install.terraform
+
+- name: Hashicorp | tfswitch usage https://tfswitch.warrensbox.com/Install/
+  ansible.builtin.debug:
+    msg: "To use tfswitch use alias tfs <VERSION>. You can use tfswitch -l to list but not switch."
+  when: install.terraform
+
+- name: Hashicorp | tfswitch first run
+  command: "{{ home }}/.bin/tfswitch -b {{ home }}/.bin/terraform 0.14.9"
+  when: install.terraform
+
+- name: Hashicorp | Terraform Cache Dir
+  file:
+    path: "{{ home }}/.terraform.d/plugin-cache"
+    state: directory
+  when: install.terraform
+
+- name: Hashicorp | Configure terraform Cache Dir
+  copy:
+    dest: "{{ home }}/.terraformrc"
+    content: |
+      plugin_cache_dir = "$HOME/.terraform.d/plugin-cache"
+  when: install.terraform

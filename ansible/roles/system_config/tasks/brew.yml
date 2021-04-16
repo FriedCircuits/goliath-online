@@ -1,0 +1,7 @@
+---
+- name: Brew | Install Packages
+  community.general.homebrew:
+    name: "{{ brew_packages }}"
+    path: /home/linuxbrew/.linuxbrew/bin
+    state: latest
+    update_homebrew: yes

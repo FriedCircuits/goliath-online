@@ -1,0 +1,9 @@
+---
+- include_tasks: install_zsh.yml
+
+- include_tasks: install_prezto.yml
+
+- include_tasks: install_custom.yml
+
+- include_tasks: bashhub.yml
+  when: install.bashhub

@@ -1,0 +1,47 @@
+---
+- name: System Packages
+  include_tasks: packages.yml
+
+- name: Setup SSH
+  include_tasks: ssh.yml
+  when: install.ssh_server
+
+- name: Brew Packages
+  include_tasks: brew.yml
+  when: install.brew
+
+- name: Tmux Config
+  include_tasks: tmux.yml
+  when: install.tmux
+
+- name: Vim Config
+  include_tasks: vim.yml
+  when: install.vim
+
+- name: Install Hashicorp tools
+  include_tasks: hashicorp.yml
+  when: install.hashicorp or install.terraform
+
+- name: Install Gruntwork tools
+  include_tasks: gruntwork.yml
+  when: install.gruntwork
+
+- name: Install Docker CLI
+  include_tasks: docker.yml
+  when: install.docker_cli
+
+- name: Install Kubernetes CLI
+  include_tasks: kubernetes.yml
+  when: install.kubernetes_cli
+
+- name: Home | Copy files
+  copy:
+    src: ../../files/
+    dest: "{{ home }}/"
+
+- name: Copy entrypoint
+  become: yes
+  template:
+    src: entrypoint.sh.j2
+    dest: /entrypoint.sh
+    mode: 0755

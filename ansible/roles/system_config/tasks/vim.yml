@@ -1,0 +1,37 @@
+---
+- name: Vim | Install packages
+  become: yes
+  package:
+    name:
+      - vim
+      - vim-nox
+    state: latest
+
+- name: Vim | Create /etc/vim config directory
+  become: yes
+  file:
+    path: /etc/vim
+    mode: 0775
+    state: directory
+
+- name: Vim | Copy vim config
+  become: yes
+  copy:
+    src: vimrc
+    dest: /etc/vim/vimrc
+
+- name: Vim | Setup vim user Config
+  git:
+    repo: https://github.com/FriedCircuits/vim.git
+    dest: "{{ home }}/.vim"
+    track_submodules: yes
+    version: master
+
+- name: Vim | Link config
+  file:
+    src: "{{ home }}/.vim/vimrc"
+    dest: "{{ home }}/.vimrc"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0600
+    state: link

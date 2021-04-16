@@ -1,0 +1,73 @@
+---
+- name: Install prezto
+  git:
+    repo: https://github.com/sorin-ionescu/prezto.git
+    dest: "{{ home }}/.zprezto"
+    force: yes
+  become_user: "{{ user }}"
+
+- name: Add symbolic link dotfiles
+  file:
+    src: "{{ home }}/.zprezto/runcoms/{{ item }}"
+    dest: "{{ home }}/.{{ item }}"
+    state: "link"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+  with_items:
+    - zlogin
+    - zlogout
+    - zprofile
+    - zshenv
+
+- name: Set .zshrc
+  template:
+    src: .zshrc.j2
+    dest: "{{ home }}/.zshrc"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+
+- name: Set .zshrc.custom
+  template:
+    src: .zshrc.custom.j2
+    dest: "{{ home }}/.zshrc.custom"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+
+- name: Make directory .zsh.d
+  file:
+    path: "{{ home }}/.zsh.d"
+    state: directory
+    owner: "{{ user }}"
+    group: "{{ user }}"
+
+- name: Make directory .zsh_prompts
+  file:
+    path: "{{ home }}/.zsh_prompts"
+    state: directory
+    owner: "{{ user }}"
+    group: "{{ user }}"
+
+- name: copy custom theme
+  copy:
+    src: prompt_sorin_custom_setup
+    dest: "{{ home }}/.zsh_prompts/"
+
+- name: Switch to zsh
+  user:
+    name: "{{ user }}"
+    shell: /usr/bin/zsh
+  become: yes
+
+- name: Copy Pretzo custom config
+  template:
+    src: .zpreztorc
+    dest: "{{ home }}"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+
+- name: Install spaceship
+  become: yes
+  npm:
+    name: spaceship-prompt
+    global: yes
+  when: install_spaceship

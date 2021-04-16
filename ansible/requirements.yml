@@ -1,0 +1,7 @@
+---
+roles:
+  - markosamuli.linuxbrew
+  - deekayen.awscli2
+
+collections:
+  - name: community.general

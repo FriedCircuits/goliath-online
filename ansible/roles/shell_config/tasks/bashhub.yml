@@ -1,0 +1,7 @@
+---
+- name: Download bashhub Client Script
+  get_url:
+    url: https://bashhub.com/setup
+    dest: "{{ home }}/bashhub_setup.sh"
+    mode: 0700
+

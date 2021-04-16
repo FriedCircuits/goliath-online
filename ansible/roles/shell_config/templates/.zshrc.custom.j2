@@ -1,0 +1,50 @@
+# load zsh flagment
+# if [ -d "${HOME}/.zsh.d" ]; then
+#    for f in "${HOME}"/.zsh.d/* ; do
+#        source $f
+#    done
+# fi
+
+# Fix Bindkey Home/End
+bindkey "\e[1~" beginning-of-line
+bindkey  "\e[4~" end-of-line
+
+{% if install.brew %}
+export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+{% endif %}
+
+export PATH="$HOME/.bin:$PATH"
+
+{% if bashhub.set_env %}
+export BH_URL={{ bashhub.server }}
+{% endif %}
+{% if install.bashhub %}
+export PATH="$HOME/.bashhub/bin:$PATH"
+# Fix for missing log.txt for bashhub client.
+if [ -d "$HOME/.bashhub/" ]; then
+  if [ ! -f "$HOME/.bashhub/log.txt" ]; then
+    touch "$HOME/.bashhub/log.txt"
+  fi
+  ### Bashhub.com Installation
+  if [ -f ~/.bashhub/bashhub.zsh ]; then
+      source ~/.bashhub/bashhub.zsh
+  fi
+fi
+{% endif %}
+
+
+{% if install.terraform %}
+alias tfs="tfswitch -b $HOME/.bin/terraform"
+{% endif %}
+
+{% if install.terraform and install.gruntwork %}
+alias tg="terragrunt"
+alias tgp="terragrunt plan"
+alias tga="terragrunt apply"
+alias tgd="terragrunt destroy"
+alias tgi="terragrunt import"
+alias tgI="terragrunt init"
+alias tgS="terragrunt state"
+alias tgs="terragrunt show"
+alias tgv="terragrunt validate"
+{% endif %}

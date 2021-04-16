@@ -1,0 +1,17 @@
+## Install Custom module_defaults
+
+- name: Kubernetes autocomplete prezto-kubectl
+  git:
+    dest: "{{ home }}/.zprezto-contrib/kubectl"
+    repo: https://github.com/prezto-contributions/prezto-kubectl.git
+
+- name: Terraform autocomplete prezto-terraform
+  git:
+    dest: "{{ home }}/.zprezto-contrib/terraform"
+    repo: https://github.com/prezto-contributions/prezto-terraform.git
+
+- name: Spaceship autocomplete prezto-contrib
+  git:
+    dest: "{{ home }}/.zprezto-contrib/contrib"
+    repo: https://github.com/belak/prezto-contrib
+  when: install_spaceship

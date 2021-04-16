@@ -1,0 +1,40 @@
+[time]
+disabled = false
+format = '🕙[\[ $time \]]($style) '
+time_format = "%T"
+utc_time_offset = "-5"
+time_range = "10:00:00-14:00:00"
+
+[git_branch]
+symbol = "🌱 "
+truncation_length = 6
+truncation_symbol = ".."
+
+[ruby]
+symbol = "🔺 "
+
+{% if install.terraform %}
+[terraform]
+format = "[🏎💨 $version$workspace]($style) "
+{% endif %}
+
+{% if install.kubernetes_cli %}
+[kubernetes]
+format = 'on [⛵ $context \($namespace\)](dimmed green) '
+disabled = false
+{% endif %}
+
+{% if install.docker_cli %}
+[docker_context]
+format = "via [🐋 $context](blue bold)"
+{% endif %}
+
+[battery]
+full_symbol = "🔋"
+charging_symbol = "⚡️"
+discharging_symbol = "💀"
+
+[aws]
+format = 'on [$symbol$profile(\($region\))]($style) '
+style = "bold blue"
+symbol = "☁️ "

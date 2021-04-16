@@ -1,0 +1,47 @@
+---
+- name: System | Install packages
+  become: yes
+  package:
+    name: "{{ system_packages }}"
+    state: latest
+
+- name: System | Create user bin
+  file:
+    path: "{{ home }}/.bin"
+    state: directory
+
+- name: System | Download bat
+  get_url:
+    url: https://github.com/sharkdp/bat/releases/download/v0.18.0/bat_0.18.0_amd64.deb
+    dest: "/tmp/"
+
+- name: System | Install bat
+  become: yes
+  apt:
+    deb: "/tmp/bat_0.18.0_amd64.deb"
+
+- name: System | Add Github APT key
+  become: yes
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: C99B11DEB97541F0
+    state: present
+
+- name: System | Add Github repo
+  become: yes
+  ansible.builtin.apt_repository:
+    repo: "deb https://cli.github.com/packages {{ ansible_distribution_release }} main"
+    state: present
+    update_cache: true
+
+- name: System | Install Github CLI
+  become: yes
+  package:
+    name: gh
+    state: latest
+
+- name: System | Install Lastpass CLI
+  copy:
+    src: lpass
+    dest: "{{ home }}/.bin/"
+    mode: 0700

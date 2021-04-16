@@ -1,0 +1,34 @@
+# Executes commands at the start of an interactive session.
+#
+# Authors:
+#   Sorin Ionescu <sorin.ionescu@gmail.com>
+#
+
+# Source Prezto.
+if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
+  source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
+fi
+
+# Customize to your needs...
+if [[ -s $HOME/.zshrc.custom ]]; then
+  source $HOME/.zshrc.custom
+fi
+
+autoload -Uz promptinit
+fpath=(${HOME}/.zsh_prompts $fpath)
+promptinit
+
+{% if install_spaceship %}
+prompt spaceship
+SPACESHIP_VI_MODE_SHOW=false
+SPACESHIP_TIME_SHOW=true
+SPACESHIP_TIME_COLOR=green
+{% elif install_starship %}
+eval "$(starship init zsh)"
+{% else %}
+prompt sorin_custom
+{% endif %}
+
+alias ll='ls -alh  --group-directories-first --color=auto'
+
+LS_COLORS=$LS_COLORS:'di=0;35:' ; export LS_COLORS

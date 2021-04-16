@@ -1,0 +1,16 @@
+---
+- name: Kubernetes | Install kubectl
+  become: yes
+  get_url:
+    url: https://storage.googleapis.com/kubernetes-release/release/{{ lookup('url', 'https://storage.googleapis.com/kubernetes-release/release/stable.txt', wantlist=False, split_lines=false ) }}/bin/linux/amd64/kubectl
+    dest: "/usr/bin/kubectl"
+    mode: 0755
+
+- name: Kubernetes | Download Helm Installer
+  get_url:
+    url: https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+    dest: "/tmp/get_helm.sh"
+    mode: 0700
+
+- name: Kubernetes | Install Helm
+  command: "/tmp/get_helm.sh"

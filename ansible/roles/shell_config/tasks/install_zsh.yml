@@ -1,0 +1,55 @@
+---
+- name: Install zsh
+  package:
+    name:
+      - "powerline"
+      - "zsh"
+    state: latest
+  become: yes
+
+- name: Create user config dir
+  file:
+    path: "{{ home }}/.config"
+    state: directory
+
+- name: Install npm for Spaceship
+  become: yes
+  package:
+    name:
+      - nodejs
+      - node-gyp
+      - npm
+    state: latest
+    update_cache: yes
+  when: install_spaceship
+
+- name: Install nodejs-dev for Spaceship
+  become: yes
+  package:
+    name:
+      - nodejs-dev
+      - libssl1.0-dev
+    state: latest
+  when: install_spaceship and ansible_distribution_version < "20.04"
+
+- name: Upgrade npm
+  become: yes
+  shell: npm install -g npm
+  when: install_spaceship
+
+- name: Download Starship
+  get_url:
+    url: https://starship.rs/install.sh
+    dest: /tmp/starship_install.sh
+    mode: 0755
+  when: install_starship
+
+- name: Install Starship
+  command: /tmp/starship_install.sh -y
+  when: install_starship
+
+- name: Copy Starship prompt config
+  template:
+    src: starship.toml.j2
+    dest: "{{ home }}/.config/starship.toml"
+  when: install_starship

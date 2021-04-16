@@ -1,0 +1,18 @@
+# Build options
+VERSION="0.1.0"
+BUILD_USER="ubuntu"
+BASHHUB_SERVER="https://bashhub.com"
+
+# Docker config
+IMAGE_PUSH="false"
+IMAGE_SERVICE="docker"
+IMAGE_NAME="goliath"
+IMAGE_REPO="goliath"
+
+# AWS Config
+AWS_REGION=""
+AWS_HOST=""
+
+# Docker Hub Config
+DOCKER_USER=""
+DOCKER_EMAIL=""

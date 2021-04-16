@@ -1,0 +1,27 @@
+#!/bin/bash
+{% if install.ssh_server %}
+sudo service ssh restart > /dev/null 2>&1
+{% endif %}
+
+NOCOLOR='\033[0m'
+LOGO='\033[0;35m'
+TEXT='\033[0;32m'
+echo "${LOGO}"
+
+echo " _____       _ _       _   _         ${TEXT}version: {{ version }}${LOGO}"
+echo "|  __ \     | (_)     | | | |        ${TEXT}user: {{ user }}${LOGO}"
+echo "| |  \/ ___ | |_  __ _| |_| |__      ${TEXT}home: /home/{{ user }}${LOGO}"
+echo "| | __ / _ \| | |/ _  | __|  _ \     ${TEXT}ssh server: {{ install.ssh_server }} ip: $(hostname --all-ip-addresses | awk '{print $1}')${LOGO}"
+echo "| |_\ \ (_) | | | (_| | |_| | | |    {% if install.bashhub %}${TEXT}bh server: {{ bashhub_server }}${LOGO}{% endif %}"
+echo " \____/\___/|_|_|\__,_|\__|_| |_|    {% if install.bashhub %}${TEXT}Run ~/bashhub_setup.sh to setup${LOGO}{% endif %}"
+echo ' _____             _     _'
+echo '|  _  |           | |   (_)'
+echo '| | | |_ __ ______| |    _ _ __   ___'
+echo '| | | |  _ \______| |   | |  _ \ / _ \'
+echo '\ \_/ / | | |     | |___| | | | |  __/'
+echo ' \___/|_| |_|     \_____/_|_| |_|\___|'
+echo
+
+echo " ${NOCOLOR}"
+
+exec "$@"

@@ -1,0 +1,29 @@
+---
+- name: Tmux | Install package
+  become: yes
+  package:
+    name: tmux
+    state: latest
+
+- name: Tmux | Clone config
+  ansible.builtin.git:
+    repo: 'https://github.com/gpakosz/.tmux.git'
+    dest: "{{ home }}/.tmux"
+
+- name: Tmux | Link tmux config
+  file:
+    src: "{{ home }}/.tmux/.tmux.conf"
+    dest: "{{ home }}/.tmux.conf"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0600
+    state: link
+
+- name: Tmux | Copy tmux config
+  copy:
+    src: "{{ home }}/.tmux/.tmux.conf.local"
+    dest: "{{ home }}/"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0600
+    remote_src: yes
