@@ -14,6 +14,8 @@ export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 {% endif %}
 
 export PATH="$HOME/.bin:$PATH"
+# Needed for vscode remote-ssh gpg
+export GPG_TTY=$(tty)
 
 {% if bashhub.set_env %}
 export BH_URL={{ bashhub.server }}
