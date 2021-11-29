@@ -32,12 +32,12 @@
         line: 'GOLIATH_VERSION={{ version }}'
 
   roles:
+    - role: system_config
     - role: shell_config
     - role: markosamuli.linuxbrew
       linuxbrew_use_installer: true
       linuxbrew_init_shell: false
       linuxbrew_install_checksum: "sha256:9af575eb52eda83d546963db3ebed65d840738bc533ca195dcf3eb6ca2d6c7e7"
       when: install.brew
-    - role: system_config
     - role: deekayen.awscli2
       when: install.awscli

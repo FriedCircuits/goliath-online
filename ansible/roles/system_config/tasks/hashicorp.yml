@@ -62,7 +62,7 @@
   when: install.terraform
 
 - name: Hashicorp | tfswitch first run
-  command: "{{ home }}/.bin/tfswitch -b {{ home }}/.bin/terraform 0.14.9"
+  command: "{{ home }}/.bin/tfswitch -b {{ home }}/.bin/terraform 1.0.11"
   when: install.terraform
 
 - name: Hashicorp | Terraform Cache Dir
