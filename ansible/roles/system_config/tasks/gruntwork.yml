@@ -5,16 +5,16 @@
     mode: 0755
 
 - name: Gruntwork | Install
-  command: /tmp/bootstrap-gruntwork-installer.sh --version v0.0.36
+  command: /tmp/bootstrap-gruntwork-installer.sh --version v{{ gruntwork_version }}
 
 
 - name: Gruntwork | Install kubergrunt
-  command: gruntwork-install --binary-name "kubergrunt" --repo "https://github.com/gruntwork-io/kubergrunt" --tag "v0.6.12"
+  command: gruntwork-install --binary-name "kubergrunt" --repo "https://github.com/gruntwork-io/kubergrunt" --tag "v{{ kubergrunt_version }}"
   when: install.kubernetes_cli
 
 - name: Gruntwork | Install terragrunt
   get_url:
-    url: https://github.com/gruntwork-io/terragrunt/releases/download/v0.28.15/terragrunt_linux_amd64
+    url: https://github.com/gruntwork-io/terragrunt/releases/download/v{{ terragrunt_verison }}/terragrunt_linux_amd64
     dest: "{{ home }}/.bin/terragrunt"
     mode: 0700
   when: install.terraform
