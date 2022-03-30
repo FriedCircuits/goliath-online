@@ -9,6 +9,8 @@ system_packages:
   - dnsutils
   - netcat
   - jq
+  - make
+  - dos2unix
 
 # Configure which packages to install.
 install:
