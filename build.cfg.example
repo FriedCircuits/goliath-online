@@ -1,5 +1,4 @@
 # Build options
-VERSION="0.1.0"
 BUILD_USER="ubuntu"
 BASHHUB_SERVER="https://bashhub.com"
 

@@ -2,6 +2,7 @@
 set -eu
 
 source "build.cfg"
+source "VERSION"
 
 docker run -d \
   -e SSH_AUTH_SOCK=${SSH_AUTH_SOCK} \

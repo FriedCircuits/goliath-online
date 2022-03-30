@@ -6,6 +6,7 @@ if [[ ! -f "./build.cfg" ]]; then
 fi
 
 source "build.cfg"
+source "VERSION"
 
 SECONDS=0
 DOCKER_BUILDKIT=1
