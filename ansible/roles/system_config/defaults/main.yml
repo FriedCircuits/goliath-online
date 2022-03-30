@@ -30,7 +30,7 @@ hashicorp_tools:
   - consul
   - nomad
 
-tfswitcher_version: 0.12.1168
+tfswitcher_version: 0.13.1218
 tfswitcher_repo: https://github.com/warrensbox/terraform-switcher/releases/download/{{tfswitcher_version}}/terraform-switcher_{{tfswitcher_version}}_linux_amd64.tar.gz
 
 # Kf enabled above install these packages via brew.
@@ -39,7 +39,7 @@ brew_packages:
   - lastpass-cli
 
 # Manage pinned package versions
-bat_version: 0.18.3
+bat_version: 0.20.0
 gruntwork_version: 0.0.38
-kubergrunt_version: 0.7.11
-terragrunt_verison: 0.35.13
+kubergrunt_version: 0.8.0
+terragrunt_verison: 0.36.6
