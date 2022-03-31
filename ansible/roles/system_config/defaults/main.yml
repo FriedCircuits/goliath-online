@@ -15,6 +15,7 @@ system_packages:
 # Configure which packages to install.
 install:
   brew: no
+  codeserver: no
   docker_cli: yes
   gruntwork: yes
   hashicorp: yes

@@ -1,0 +1,8 @@
+- name: Code Server | Download installer
+  get_url:
+    url: https://code-server.dev/install.sh
+    dest: /tmp/codeserver-installer.sh
+    mode: 0755
+
+- name: Code Server | Install
+  command: /tmp/codeserver-installer.sh --version 4.2.0
