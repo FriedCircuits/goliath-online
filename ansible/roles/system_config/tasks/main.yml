@@ -10,6 +10,10 @@
   include_tasks: brew.yml
   when: install.brew
 
+- name: Code Server
+  include_tasks: codeserver.yml
+  when: install.codeserver
+
 - name: Tmux Config
   include_tasks: tmux.yml
   when: install.tmux

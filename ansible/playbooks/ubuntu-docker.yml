@@ -13,6 +13,7 @@
       awscli: yes
       bashhub: yes
       brew: no
+      codeserver: yes
       docker_cli: yes
       gruntwork: yes
       hashicorp: yes

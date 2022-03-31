@@ -15,5 +15,6 @@ docker run -d \
   -v ~/.zhistory:/home/$BUILD_USER/.zhistory \
   -v ~/.docker:/home/$BUILD_USER/.docker \
   -p 22:22 \
+  -p 8080:8080 \
   --hostname=${IMAGE_NAME} \
   --name ${IMAGE_NAME} ${IMAGE_NAME}:latest
