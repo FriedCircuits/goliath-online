@@ -1,11 +1,11 @@
-- name: SOPS | Get Latest
+- name: SOPS | Get latest
   github_release:
     user: mozilla
     repo: sops
     action: latest_release
   register: sops_latest
 
-- name: SOPS | Install Latest
+- name: SOPS | Install latest
   get_url:
     url: "https://github.com/mozilla/sops/releases/download/{{ sops_latest['tag'] }}/sops-{{ sops_latest['tag'] }}.linux.amd64"
     dest: "{{ home }}/.bin/sops"

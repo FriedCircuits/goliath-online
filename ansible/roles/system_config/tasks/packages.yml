@@ -10,15 +10,22 @@
     path: "{{ home }}/.bin"
     state: directory
 
+- name: System | Get Latest Bat
+  github_release:
+    user: sharkdp
+    repo: bat
+    action: latest_release
+  register: bat_latest
+
 - name: System | Download bat
   get_url:
-    url: https://github.com/sharkdp/bat/releases/download/v{{ bat_version }}/bat_{{ bat_version }}_amd64.deb
+    url: https://github.com/sharkdp/bat/releases/download/{{ bat_latest['tag'] }}/bat_{{ bat_latest['tag'] | regex_replace('^v','') }}_amd64.deb
     dest: "/tmp/"
 
 - name: System | Install bat
   become: yes
   apt:
-    deb: "/tmp/bat_{{ bat_version }}_amd64.deb"
+    deb: "/tmp/bat_{{ bat_latest['tag'] | regex_replace('^v','') }}_amd64.deb"
 
 - name: System | Add Github APT key
   become: yes

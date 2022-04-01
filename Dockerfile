@@ -26,7 +26,7 @@ WORKDIR /home/${BUILD_USER}
 RUN /data/scripts/ansible.sh ${BUILD_USER} ${GOLIATH_VERISON} ${BASHHUB_SERVER}
 
 ## Clean Up
-RUN sudo rm -rf /data
+RUN sudo rm -rf /data && sudo rm -rf /tmp/*
 
 ENTRYPOINT ["sh", "/entrypoint.sh"]
 

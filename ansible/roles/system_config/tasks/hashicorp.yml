@@ -32,16 +32,27 @@
     state: latest
   when: install.terraform
 
+- name: Hashicorp | Get latest tfswitch
+  github_release:
+    user: warrensbox
+    repo: terraform-switcher
+    action: latest_release
+  register: tfswitch_latest
+
+- name: Hashicorp | Set tfswitch version
+  set_fact:
+    tfswitcher_version: "{{ tfswitch_latest['tag'] | regex_replace('^v','') }}"
+
 - name: Hashicorp | Download tfswitch
   get_url:
-    url: "{{ tfswitcher_repo }}"
+    url: "https://github.com/warrensbox/terraform-switcher/releases/download/{{ tfswitcher_version }}/terraform-switcher_{{ tfswitcher_version }}_linux_amd64.tar.gz"
     dest: "{{ home }}/.bin/"
     mode: 0700
   when: install.terraform
 
 - name: Hashicorp | Unarchive tfswitch
   ansible.builtin.unarchive:
-    src: "{{ home }}/.bin/terraform-switcher_{{tfswitcher_version}}_linux_amd64.tar.gz"
+    src: "{{ home }}/.bin/terraform-switcher_{{ tfswitcher_version }}_linux_amd64.tar.gz"
     dest: "{{ home }}/.bin/"
     exclude:
      - README.md
@@ -52,7 +63,7 @@
 
 - name: Hashicorp | Cleanup tfswitch
   file:
-    path: "{{ home }}/.bin/terraform-switcher_{{tfswitcher_version}}_linux_amd64.tar.gz"
+    path: "{{ home }}/.bin/terraform-switcher_{{ tfswitcher_version }}_linux_amd64.tar.gz"
     state: absent
   when: install.terraform
 
@@ -61,8 +72,15 @@
     msg: "To use tfswitch use alias tfs <VERSION>. You can use tfswitch -l to list but not switch."
   when: install.terraform
 
+- name: Hashicorp | Get latest terraform
+  github_release:
+    user: hashicorp
+    repo: terraform
+    action: latest_release
+  register: terraform_latest
+
 - name: Hashicorp | tfswitch first run
-  command: "{{ home }}/.bin/tfswitch -b {{ home }}/.bin/terraform 1.1.7"
+  command: "{{ home }}/.bin/tfswitch -b {{ home }}/.bin/terraform {{ terraform_latest['tag'] | regex_replace('^v','') }}"
   when: install.terraform
 
 - name: Hashicorp | Terraform Cache Dir
