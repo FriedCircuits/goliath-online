@@ -10,10 +10,6 @@
   include_tasks: brew.yml
   when: install.brew
 
-- name: Code Server
-  include_tasks: codeserver.yml
-  when: install.codeserver
-
 - name: Tmux Config
   include_tasks: tmux.yml
   when: install.tmux
@@ -37,6 +33,14 @@
 - name: Install Kubernetes CLI
   include_tasks: kubernetes.yml
   when: install.kubernetes_cli
+
+- name: Install Code Server
+  include_tasks: codeserver.yml
+  when: install.codeserver
+
+- name: Install Mozilla SOPS
+  include_tasks: sops.yml
+  when: install.sops
 
 - name: Home | Copy files
   copy:

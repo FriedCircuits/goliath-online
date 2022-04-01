@@ -20,6 +20,7 @@ install:
   gruntwork: yes
   hashicorp: yes
   kubernetes_cli: yes
+  sops: yes
   ssh_server: yes
   terraform: yes
   tmux: yes

@@ -8,7 +8,9 @@ ARG BASHHUB_SERVER="https://bashhub.com"
 ENV GOLIATH_VERISON=${VERSION}
 
 RUN apt-get update -y && \
-    apt-get install -y aptitude apt-utils sudo git ansible python3-apt
+    apt-get install -y aptitude apt-utils sudo git ansible python3-apt python3-pip
+
+RUN pip3 install github3.py
 
 RUN useradd -ms /bin/bash ${BUILD_USER}
 RUN echo "%${BUILD_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/${BUILD_USER}
