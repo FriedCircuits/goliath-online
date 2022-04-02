@@ -10,3 +10,30 @@
     url: "https://github.com/mozilla/sops/releases/download/{{ sops_latest['tag'] }}/sops-{{ sops_latest['tag'] }}.linux.amd64"
     dest: "{{ home }}/.bin/sops"
     mode: 0700
+
+- name: SOPS | Get latest age
+  github_release:
+    user: FiloSottile
+    repo: age
+    action: latest_release
+  register: age_latest
+
+- name: SOPS | Set age facts
+  set_fact:
+    age_filename: "age-{{ age_latest ['tag'] }}-linux-amd64.tar.gz"
+
+- name: SOPS | Download latest age
+  get_url:
+    url: "https://github.com/FiloSottile/age/releases/download/{{ age_latest['tag'] }}/{{ age_filename }}"
+    dest: "/tmp/"
+    mode: 0600
+
+- name: SOPS | Unarchive latest age
+  ansible.builtin.unarchive:
+    src: "/tmp/{{ age_filename }}"
+    dest: "{{ home }}/.bin/"
+    exclude:
+     - LICENSE
+    mode: 0700
+    remote_src: yes
+  when: install.terraform
