@@ -43,28 +43,26 @@
   set_fact:
     tfswitcher_version: "{{ tfswitch_latest['tag'] | regex_replace('^v','') }}"
 
+- name: Hashicorp | Set tfswitch filename
+  set_fact:
+    tfswitcher_filename: "terraform-switcher_{{ tfswitcher_version }}_linux_amd64.tar.gz"
+
 - name: Hashicorp | Download tfswitch
   get_url:
-    url: "https://github.com/warrensbox/terraform-switcher/releases/download/{{ tfswitcher_version }}/terraform-switcher_{{ tfswitcher_version }}_linux_amd64.tar.gz"
-    dest: "{{ home }}/.bin/"
-    mode: 0700
+    url: "https://github.com/warrensbox/terraform-switcher/releases/download/{{ tfswitcher_version }}/{{ tfswitcher_filename }}"
+    dest: "/tmp/"
+    mode: 0600
   when: install.terraform
 
 - name: Hashicorp | Unarchive tfswitch
   ansible.builtin.unarchive:
-    src: "{{ home }}/.bin/terraform-switcher_{{ tfswitcher_version }}_linux_amd64.tar.gz"
+    src: "/tmp/{{ tfswitcher_filename }}"
     dest: "{{ home }}/.bin/"
     exclude:
      - README.md
      - LICENSE
     mode: 0700
     remote_src: yes
-  when: install.terraform
-
-- name: Hashicorp | Cleanup tfswitch
-  file:
-    path: "{{ home }}/.bin/terraform-switcher_{{ tfswitcher_version }}_linux_amd64.tar.gz"
-    state: absent
   when: install.terraform
 
 - name: Hashicorp | tfswitch usage https://tfswitch.warrensbox.com/Install/
