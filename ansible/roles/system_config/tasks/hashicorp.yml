@@ -19,12 +19,6 @@
     state: latest
   when: install.hashicorp
 
-# https://github.com/hashicorp/vault/issues/10048
-- name: Hashicorp | Set IPC_LOCK for Vault
-  become: yes
-  command: "setcap cap_ipc_lock= /usr/bin/vault"
-  when: install.hashicorp and "vault" in hashicorp_tools
-
 - name: Hashicorp | Install terrarform
   become: yes
   package:
@@ -41,7 +35,7 @@
 
 - name: Hashicorp | Set tfswitch version
   set_fact:
-    tfswitcher_version: "{{ tfswitch_latest['tag'] | regex_replace('^v','') }}"
+    tfswitcher_version: "v{{ tfswitch_latest['tag'] | regex_replace('^v','') }}"
 
 - name: Hashicorp | Set tfswitch filename
   set_fact:
@@ -59,8 +53,8 @@
     src: "/tmp/{{ tfswitcher_filename }}"
     dest: "{{ home }}/.bin/"
     exclude:
-     - README.md
-     - LICENSE
+      - README.md
+      - LICENSE
     mode: 0700
     remote_src: yes
   when: install.terraform
