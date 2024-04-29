@@ -28,7 +28,7 @@ docker build --rm \
   --progress=plain \
   --build-arg BUILD_USER=$BUILD_USER \
   --build-arg VERSION=$VERSION \
-  --build-arg TZone=$TZ \
+  --build-arg TZ=$TZone \
   --build-arg BASHHUB_SERVER=$BASHHUB_SERVER \
   -f Dockerfile .
 
