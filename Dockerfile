@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 LABEL maintainer="FriedCircuits"
 
@@ -8,7 +8,7 @@ ARG BASHHUB_SERVER="https://bashhub.com"
 ENV GOLIATH_VERISON=${VERSION}
 
 RUN apt-get update -y && \
-    apt-get install -y aptitude apt-utils sudo git ansible python3-apt python3-pip
+    DEBIAN_FRONTEND=noninteractive apt-get install -y aptitude apt-utils sudo git ansible python3-apt python3-pip
 
 RUN pip3 install github3.py
 

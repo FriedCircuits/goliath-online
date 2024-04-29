@@ -31,13 +31,13 @@
   become: yes
   apt_key:
     keyserver: keyserver.ubuntu.com
-    id: C99B11DEB97541F0
+    id: 23F3D4EA75716059 #C99B11DEB97541F0
     state: present
 
 - name: System | Add Github repo
   become: yes
   ansible.builtin.apt_repository:
-    repo: "deb https://cli.github.com/packages {{ ansible_distribution_release }} main"
+    repo: "deb https://cli.github.com/packages {{ ansible_distribution_release }} stable main"
     state: present
     update_cache: true
 
@@ -46,9 +46,3 @@
   package:
     name: gh
     state: latest
-
-- name: System | Install Lastpass CLI
-  copy:
-    src: lpass
-    dest: "{{ home }}/.bin/"
-    mode: 0700

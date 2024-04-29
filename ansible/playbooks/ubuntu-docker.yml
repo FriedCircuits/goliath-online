@@ -9,6 +9,8 @@
     bashhub:
       set_env: yes
       server: "{{ bashhub_server }}"
+    codeserver:
+      auth: no # When using another front end auth
     install:
       awscli: yes
       bashhub: yes

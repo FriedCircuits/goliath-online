@@ -30,11 +30,11 @@ install:
 # Terraform is installed seperately above.
 hashicorp_tools:
   - packer
-  - vault
-  - consul
-  - nomad
 
 # Kf enabled above install these packages via brew.
 # Note it seems most if not all brew packages increase image size significantly.
 brew_packages:
   - lastpass-cli
+
+codeserver:
+  auth: yes # Disable if using your own auth such as authelia with traefik
