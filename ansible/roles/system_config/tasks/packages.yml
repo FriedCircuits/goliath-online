@@ -31,7 +31,7 @@
   become: yes
   apt_key:
     keyserver: keyserver.ubuntu.com
-    id: 23F3D4EA75716059 #C99B11DEB97541F0
+    id: 23F3D4EA75716059
     state: present
 
 - name: System | Add Github repo
