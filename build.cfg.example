@@ -3,7 +3,7 @@ BUILD_USER="ubuntu"
 BASHHUB_SERVER="https://bashhub.com"
 
 # TZ
-TZ="America/Los_Angeles"
+TZone="America/Los_Angeles"
 
 # Docker config
 IMAGE_PUSH="false"
