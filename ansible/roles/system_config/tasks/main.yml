@@ -1,4 +1,10 @@
 ---
+- name: Create a keyring dir
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
 - name: System Packages
   include_tasks: packages.yml
 
@@ -49,7 +55,7 @@
 
 - name: Copy entrypoint
   become: yes
-  template:
+  ansible.builtin.template:
     src: entrypoint.sh.j2
     dest: /entrypoint.sh
     mode: 0755

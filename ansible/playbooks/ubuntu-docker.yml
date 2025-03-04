@@ -6,11 +6,12 @@
 
   vars:
     home: "/home/{{user}}"
+    github_token: "{{ github_token | default(omit) }}"
     bashhub:
       set_env: yes
       server: "{{ bashhub_server }}"
     codeserver:
-      auth: no # When using another front end auth
+      auth: yes # Set to no when using another front end for auth, password shown at first boot
     install:
       awscli: yes
       bashhub: yes

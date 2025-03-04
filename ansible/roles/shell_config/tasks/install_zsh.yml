@@ -13,18 +13,21 @@
     path: "{{ home }}/.config"
     state: directory
 
-- name: "Add nodejs apt key"
+- name: Setup apt for nodejs 22.x
   become: yes
-  apt_key:
-    url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
-    state: present
-  when: install_spaceship
+  block:
+    - name: nodejs repo | gpg key
+      ansible.builtin.get_url:
+        url: https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key
+        dest: /etc/apt/keyrings/nodesource.asc
+        mode: '0644'
 
-- name: "Add nodejs 17.x ppa for apt repo"
-  become: yes
-  apt_repository:
-    repo: deb https://deb.nodesource.com/node_17.x focal main
-    update_cache: yes
+    - name: nodejs | apt source
+      ansible.builtin.apt_repository:
+        filename: nodejs
+        repo: deb [arch=amd64 signed-by=/etc/apt/keyrings/nodesource.asc] https://deb.nodesource.com/node_22.x nodistro main
+        state: present
+        update_cache: true
   when: install_spaceship
 
 - name: Install nodejs for Spaceship

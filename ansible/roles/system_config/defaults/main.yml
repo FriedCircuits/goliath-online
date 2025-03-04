@@ -7,7 +7,7 @@ system_packages:
   - htop
   - net-tools
   - dnsutils
-  - netcat
+  - netcat-traditional
   - jq
   - make
   - dos2unix

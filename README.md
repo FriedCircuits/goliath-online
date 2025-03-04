@@ -28,6 +28,7 @@ This image can be built as is out of the box, but there a few options you will w
 2. Edit `build.cfg`
 3. Adjust values for your setup. Some of the notable ones are explained below.
     - `BUILD_USER` will be created and its home directory set as the working directory in the container.
+    - `GITHUB_TOKEN` set to avoid Github rate limiting
     - `IMAGE_PUSH` will set if the image should be pushed after a successful build or not.
     - `IMAGE_SERVICE` sets if you want to push to Docker Hub or AWS. Be sure to configure the appropriate values.
 4. Edit the playbook to configure what options you want enabled.

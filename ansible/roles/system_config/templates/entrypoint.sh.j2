@@ -25,7 +25,7 @@ echo
 echo " ${NOCOLOR}"
 
 {% if install.codeserver %}
-nohup code-server {% if codeserver.auth != yes %}--auth none{% endif %} --bind-addr 0.0.0.0:8080 &
+nohup code-server {% if codeserver.auth != 'yes' %}--auth none{% endif %} --bind-addr 0.0.0.0:8080 /home/{{ user }} >> /tmp/code-server.out 2>> /tmp/code-server.err &
 sleep 30
 echo "$(cat /home/{{ user }}/.config/code-server/config.yaml)"
 {% endif %}
