@@ -4,5 +4,8 @@
     dest: /tmp/codeserver-installer.sh
     mode: 0755
 
+# Clearing VERSION env so it doesn't conflict with builder, otherwise have to set --version
 - name: Code Server | Install
-  command: /tmp/codeserver-installer.sh --version 4.2.0
+  command: /tmp/codeserver-installer.sh
+  environment:
+    VERSION: ""

@@ -30,6 +30,7 @@ docker build --rm \
   --build-arg VERSION=$VERSION \
   --build-arg TZ=$TZone \
   --build-arg BASHHUB_SERVER=$BASHHUB_SERVER \
+  --secret id=GITHUB_TOKEN,env=$GITHUB_TOKEN \
   -f Dockerfile .
 
 echo "Total Build Time: $(printf '%dh:%dm:%ds\n' $(($SECONDS / 3600)) $(($SECONDS % 3600 / 60)) $(($SECONDS % 60)))"

@@ -1,16 +1,19 @@
 ---
-- name: Hashicorp | Add APT key
+- name: Hashicorp | Add APT key/repo
   become: yes
-  apt_key:
-    url: https://apt.releases.hashicorp.com/gpg
-    state: present
+  block:
+    - name: hashicorp repo | no apt key
+      ansible.builtin.get_url:
+        url: https://apt.releases.hashicorp.com/gpg
+        dest: /etc/apt/keyrings/hashicorp.asc
+        mode: '0644'
 
-- name: Hashicorp | Add repo
-  become: yes
-  apt_repository:
-    repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
-    state: present
-    update_cache: true
+    - name: hashicorp | apt source
+      ansible.builtin.apt_repository:
+        filename: hashicorp
+        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/hashicorp.asc] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
+        state: present
+        update_cache: true
 
 - name: Hashicorp | Install packages
   become: yes
@@ -31,6 +34,7 @@
     user: warrensbox
     repo: terraform-switcher
     action: latest_release
+    token: "{{ github_token | default(omit) }}"
   register: tfswitch_latest
 
 - name: Hashicorp | Set tfswitch version
@@ -69,6 +73,7 @@
     user: hashicorp
     repo: terraform
     action: latest_release
+    token: "{{ github_token | default(omit) }}"
   register: terraform_latest
 
 - name: Hashicorp | tfswitch first run

@@ -9,6 +9,7 @@
     user: gruntwork-io
     repo: gruntwork-installer
     action: latest_release
+    token: "{{ github_token | default(omit) }}"
   register: gruntwork_latest
 
 - name: Gruntwork | Install
@@ -19,10 +20,13 @@
     user: gruntwork-io
     repo: kubergrunt
     action: latest_release
+    token: "{{ github_token | default(omit) }}"
   register: kubergrunt_latest
 
 - name: Gruntwork | Install kubergrunt
   command: gruntwork-install --binary-name "kubergrunt" --repo "https://github.com/gruntwork-io/kubergrunt" --tag "{{ kubergrunt_latest['tag'] }}"
+  environment:
+    GITHUB_OAUTH_TOKEN: "{{ github_token | default(omit) }}"
   when: install.kubernetes_cli
 
 - name: Gruntwork | Get latest terragrunt
@@ -30,6 +34,7 @@
     user: gruntwork-io
     repo: terragrunt
     action: latest_release
+    token: "{{ github_token | default(omit) }}"
   register: terragrunt_latest
 
 - name: Gruntwork | Install terragrunt

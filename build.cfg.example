@@ -1,6 +1,7 @@
 # Build options
 BUILD_USER="ubuntu"
 BASHHUB_SERVER="https://bashhub.com"
+GITHUB_TOKEN=""
 
 # TZ
 TZone="America/Los_Angeles"

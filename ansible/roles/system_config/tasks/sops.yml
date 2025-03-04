@@ -3,6 +3,7 @@
     user: mozilla
     repo: sops
     action: latest_release
+    token: "{{ github_token | default(omit) }}"
   register: sops_latest
 
 - name: SOPS | Install latest
@@ -16,6 +17,7 @@
     user: FiloSottile
     repo: age
     action: latest_release
+    token: "{{ github_token | default(omit) }}"
   register: age_latest
 
 - name: SOPS | Set age facts

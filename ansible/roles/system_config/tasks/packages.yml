@@ -10,39 +10,36 @@
     path: "{{ home }}/.bin"
     state: directory
 
-- name: System | Get Latest Bat
-  github_release:
-    user: sharkdp
-    repo: bat
-    action: latest_release
-  register: bat_latest
-
-- name: System | Download bat
-  get_url:
-    url: https://github.com/sharkdp/bat/releases/download/{{ bat_latest['tag'] }}/bat_{{ bat_latest['tag'] | regex_replace('^v','') }}_amd64.deb
-    dest: "/tmp/"
-
-- name: System | Install bat
+- name: System | Install Bat https://github.com/sharkdp/bat
   become: yes
-  apt:
-    deb: "/tmp/bat_{{ bat_latest['tag'] | regex_replace('^v','') }}_amd64.deb"
+  package:
+    name: bat
+    state: latest
 
-- name: System | Add Github APT key
+- name: Github | Add APT key/repo
   become: yes
-  apt_key:
-    keyserver: keyserver.ubuntu.com
-    id: 23F3D4EA75716059
-    state: present
+  block:
+    - name: github repo | no apt key
+      ansible.builtin.get_url:
+        url: https://cli.github.com/packages/githubcli-archive-keyring.gpg
+        dest: /etc/apt/keyrings/github.gpg
+        mode: '0644'
 
-- name: System | Add Github repo
-  become: yes
-  ansible.builtin.apt_repository:
-    repo: "deb https://cli.github.com/packages {{ ansible_distribution_release }} stable main"
-    state: present
-    update_cache: true
+    - name: github | apt source
+      ansible.builtin.apt_repository:
+        filename: github
+        repo: deb [arch=amd64 signed-by=/etc/apt/keyrings/github.gpg] https://cli.github.com/packages stable main
+        state: present
+        update_cache: true
 
 - name: System | Install Github CLI
   become: yes
   package:
     name: gh
     state: latest
+
+# Enable once ubuntu has ansible-core 2.17 and remove from dockerfile
+# - name: System | Install github python package for ansible github_releases
+#   ansible.builtin.pip:
+#     name: github3.py
+#     break_system_packages: true #okay since there isn't a apt install of this
