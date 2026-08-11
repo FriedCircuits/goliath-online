@@ -16,7 +16,7 @@ This is a gaint docker container meant to be a portable DevOps environment you c
 - Gruntwork tools
 - Kubernetes CLI/Helm
 - Custom tmux/vim themes
-- Bashhub (Custom Server) via ENV
+- Atuin shell history sync (self-hosted or public server)
 
 ***
 
@@ -33,7 +33,7 @@ This image can be built as is out of the box, but there a few options you will w
     - `IMAGE_SERVICE` sets if you want to push to Docker Hub or AWS. Be sure to configure the appropriate values.
 4. Edit the playbook to configure what options you want enabled.
 
-More info: **[Bashhub](#bashhub)**
+More info: **[Atuin](#atuin)**
 
 ### Custom Home Files
 
@@ -97,17 +97,62 @@ Edit `docker_run.sh` for an example of mounting various home dir configs.
 
 ***
 
-## Bashhub
+## Atuin
 
-Bashhub allows you to sync your bash or zshell history to the cloud or your own private server. You can set the address of your private server at build time via `build.cfg` or run time via
-Docker Env.
+[Atuin](https://atuin.sh) syncs shell history between machines. Sync is
+end-to-end encrypted, so a server -- including the public one -- only ever
+stores ciphertext.
 
-`-e BH_URL=https://supersecret-bashhub.homelab`
+The sync address and version are set at build time:
 
-**Note:** If already set at build time, the run time env won't override it. Either disable during build or remove from `~/.zshrc.custom` for the curren session and relogin.
+```
+docker build \
+  --build-arg ATUIN_SERVER=https://atuin.example.com \
+  --build-arg ATUIN_VERSION=18.19.0 .
+```
 
-https://github.com/nicksherron/bashhub-server
-https://github.com/rcaloras/bashhub-client
+`ATUIN_SERVER` defaults to the public service at `https://api.atuin.sh`. Point
+it at your own [atuin-server](https://docs.atuin.sh/self-hosting/) to keep
+history on infrastructure you control.
+
+First run, on one machine:
+
+```
+atuin register -u <username> -e <email>
+atuin key        # store this somewhere safe
+atuin import auto
+atuin sync
+```
+
+Then on every other machine, using the key printed above:
+
+```
+atuin login -u <username> -k "<key>"
+atuin sync
+```
+
+That key is the only thing that can decrypt synced history. The server cannot
+recover it.
+
+### Database location
+
+The generated config puts atuin's SQLite databases on `/dev/shm` (tmpfs) rather
+than in the home directory. Atuin opens them in WAL mode, which memory-maps a
+`-shm` file, and several filesystems found under a container home -- network
+mounts, and some copy-on-write and bind-mounted volumes -- do not give mmap the
+coherency SQLite expects. The failure looks like a write-ahead log that grows
+without checkpointing, then `database disk image is malformed`.
+
+tmpfs is cleared when the container restarts, which is safe: with sync
+configured the history lives server-side and `atuin sync` rebuilds the local
+copy. The key and session files stay on persistent storage, so a restart does
+not require logging in again.
+
+Set `atuin.db_on_tmpfs: no` in the playbook to keep the databases in the home
+directory instead.
+
+The config is written with `force: no`, so edits made inside a running container
+survive image rebuilds. Delete `~/.config/atuin/config.toml` to regenerate it.
 
 ## Fonts
 
@@ -117,4 +162,4 @@ https://github.com/tonsky/FiraCode/wiki/Installing
 
 - Option to sync shell history to S3 on write.
 - Option to sync fasd db.
-- Autorun bashhub setup on first login via flag file.
+- Prompt for `atuin login` on first shell if no session exists.

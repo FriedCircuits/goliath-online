@@ -17,21 +17,15 @@ export PATH="$HOME/.bin:$PATH"
 # Needed for vscode remote-ssh gpg
 export GPG_TTY=$(tty)
 
-{% if bashhub.set_env %}
-export BH_URL={{ bashhub.server }}
+{% if install.atuin %}
+export PATH="$HOME/.bin:$PATH"
+{% if atuin.db_on_tmpfs %}
+# Atuin keeps its SQLite on tmpfs (see ~/.config/atuin/config.toml). tmpfs is
+# cleared when the container restarts, so recreate the directory before atuin
+# initialises. History is restored by `atuin sync`.
+[ -d /dev/shm/atuin ] || mkdir -p -m 700 /dev/shm/atuin
 {% endif %}
-{% if install.bashhub %}
-export PATH="$HOME/.bashhub/bin:$PATH"
-# Fix for missing log.txt for bashhub client.
-if [ -d "$HOME/.bashhub/" ]; then
-  if [ ! -f "$HOME/.bashhub/log.txt" ]; then
-    touch "$HOME/.bashhub/log.txt"
-  fi
-  ### Bashhub.com Installation
-  if [ -f ~/.bashhub/bashhub.zsh ]; then
-      source ~/.bashhub/bashhub.zsh
-  fi
-fi
+eval "$(atuin init zsh)"
 {% endif %}
 
 

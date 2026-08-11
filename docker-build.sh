@@ -29,7 +29,8 @@ docker build --rm \
   --build-arg BUILD_USER=$BUILD_USER \
   --build-arg VERSION=$VERSION \
   --build-arg TZ=$TZone \
-  --build-arg BASHHUB_SERVER=$BASHHUB_SERVER \
+  --build-arg ATUIN_SERVER=$ATUIN_SERVER \
+  --build-arg ATUIN_VERSION=$ATUIN_VERSION \
   --secret id=GITHUB_TOKEN,env=$GITHUB_TOKEN \
   -f Dockerfile .
 

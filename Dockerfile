@@ -4,7 +4,9 @@ LABEL maintainer="FriedCircuits"
 
 ARG BUILD_USER=william
 ARG VERSION=0.0.0
-ARG BASHHUB_SERVER="https://bashhub.com"
+# Defaults to the public Atuin service; override to point at a self-hosted one.
+ARG ATUIN_SERVER="https://api.atuin.sh"
+ARG ATUIN_VERSION="18.19.0"
 ENV GOLIATH_VERISON=${VERSION}
 
 RUN apt-get update -y && \
@@ -24,7 +26,7 @@ USER ${BUILD_USER}
 WORKDIR /home/${BUILD_USER}
 
 RUN --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN \
-    /data/scripts/ansible.sh ${BUILD_USER} ${GOLIATH_VERISON} ${BASHHUB_SERVER}
+    /data/scripts/ansible.sh ${BUILD_USER} ${GOLIATH_VERISON} ${ATUIN_SERVER} ${ATUIN_VERSION}
 
 ## Clean Up
 RUN sudo rm -rf /data && sudo rm -rf /tmp/*

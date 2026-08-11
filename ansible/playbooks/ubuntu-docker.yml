@@ -7,14 +7,18 @@
   vars:
     home: "/home/{{user}}"
     github_token: "{{ github_token | default(omit) }}"
-    bashhub:
-      set_env: yes
-      server: "{{ bashhub_server }}"
+    atuin:
+      server: "{{ atuin_server }}"
+      version: "{{ atuin_version }}"
+      arch: x86_64
+      # Keep atuin's SQLite on tmpfs. See the comments in
+      # roles/shell_config/templates/atuin-config.toml.j2 for why.
+      db_on_tmpfs: yes
     codeserver:
       auth: yes # Set to no when using another front end for auth, password shown at first boot
     install:
       awscli: yes
-      bashhub: yes
+      atuin: yes
       brew: no
       codeserver: yes
       docker_cli: yes

@@ -1,6 +1,8 @@
 # Build options
 BUILD_USER="ubuntu"
-BASHHUB_SERVER="https://bashhub.com"
+# Public Atuin service; override to point at a self-hosted server.
+ATUIN_SERVER="https://api.atuin.sh"
+ATUIN_VERSION="18.19.0"
 GITHUB_TOKEN=""
 
 # TZ

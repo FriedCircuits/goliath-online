@@ -1,0 +1,40 @@
+---
+# Atuin replaces bashhub for shell history sync. Installed from the release
+# tarball rather than the upstream setup script so the build is deterministic
+# and pinned.
+
+- name: Create local bin directory
+  file:
+    path: "{{ home }}/.bin"
+    state: directory
+    mode: 0755
+
+- name: Download atuin release
+  unarchive:
+    src: "https://github.com/atuinsh/atuin/releases/download/v{{ atuin.version }}/atuin-{{ atuin.arch }}-unknown-linux-musl.tar.gz"
+    dest: /tmp
+    remote_src: yes
+    creates: "/tmp/atuin-{{ atuin.arch }}-unknown-linux-musl"
+
+- name: Install atuin binary
+  copy:
+    src: "/tmp/atuin-{{ atuin.arch }}-unknown-linux-musl/atuin"
+    dest: "{{ home }}/.bin/atuin"
+    remote_src: yes
+    mode: 0755
+
+- name: Create atuin config directory
+  file:
+    path: "{{ home }}/.config/atuin"
+    state: directory
+    mode: 0755
+
+# Only the sync address and database paths are templated. Everything else is
+# left to atuin's defaults so upgrades pick up new settings, and so a user who
+# edits the config by hand is not fighting the image on every rebuild.
+- name: Configure atuin
+  template:
+    src: atuin-config.toml.j2
+    dest: "{{ home }}/.config/atuin/config.toml"
+    mode: 0600
+    force: no
