@@ -34,7 +34,7 @@ echo "$(cat /home/{{ user }}/.config/code-server/config.yaml)"
 if [ -f "${CLAUDE_CONFIG_DIR:-/home/{{ user }}/.claude}/.credentials.json" ]; then
   /home/{{ user }}/.bin/claude-rc start
 else
-  echo "Claude Remote Control: run 'claude' and /login, then 'claude-rc' to finish setup"
+  echo "Claude Remote Control: run 'claude auth login', then 'claude-rc' to finish setup"
 fi
 {% endif %}
 

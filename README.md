@@ -103,7 +103,7 @@ ports need to be exposed.
 Remote Control requires a claude.ai subscription login. API keys and
 `claude setup-token` tokens do not work with it.
 
-1. SSH or `docker exec` into the container and run `claude`, then `/login`.
+1. SSH or `docker exec` into the container and run `claude auth login`.
 2. Run `claude-rc` to start the server in a tmux session and attach to it.
    Answer the one-time prompts, then detach with the tmux prefix + `d`.
 3. Open claude.ai/code or the Claude app and select the session named after
