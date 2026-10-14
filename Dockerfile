@@ -2,7 +2,7 @@ FROM ubuntu:24.04
 
 LABEL maintainer="FriedCircuits"
 
-ARG BUILD_USER=william
+ARG BUILD_USER=ubuntu
 ARG VERSION=0.0.0
 # Defaults to the public Atuin service; override to point at a self-hosted one.
 ARG ATUIN_SERVER="https://api.atuin.sh"
@@ -14,7 +14,7 @@ RUN apt-get update -y && \
 
 RUN pip3 install github3.py --break-system-packages # For Ansible github_releases
 
-RUN useradd -ms /bin/bash ${BUILD_USER}
+RUN id -u ${BUILD_USER} >/dev/null 2>&1 || useradd -ms /bin/bash ${BUILD_USER}
 RUN echo "%${BUILD_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/${BUILD_USER}
 
 RUN mkdir -p /data/scripts /data/ansible
