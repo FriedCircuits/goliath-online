@@ -15,6 +15,7 @@ system_packages:
 # Configure which packages to install.
 install:
   brew: no
+  claude_code: no
   codeserver: no
   docker_cli: yes
   gruntwork: yes
@@ -38,3 +39,7 @@ brew_packages:
 
 codeserver:
   auth: yes # Disable if using your own auth such as authelia with traefik
+
+claude_code:
+  channel: stable # stable, latest or a pinned version such as 2.1.89
+  auto_update: yes

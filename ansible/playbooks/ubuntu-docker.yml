@@ -15,10 +15,14 @@
       db_on_tmpfs: no
     codeserver:
       auth: yes # Set to no when using another front end for auth, password shown at first boot
+    claude_code:
+      channel: stable # stable, latest or a pinned version such as 2.1.89
+      auto_update: yes
     install:
       awscli: yes
       atuin: yes
       brew: no
+      claude_code: yes
       codeserver: yes
       docker_cli: yes
       gruntwork: yes

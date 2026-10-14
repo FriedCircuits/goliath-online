@@ -1,0 +1,11 @@
+- name: Claude Code | Download installer
+  get_url:
+    url: https://claude.ai/install.sh
+    dest: /tmp/claude-installer.sh
+    mode: 0755
+
+# Installs to ~/.local/bin/claude. Accepts stable, latest or a pinned version.
+- name: Claude Code | Install
+  command: "/tmp/claude-installer.sh {{ claude_code.channel }}"
+  args:
+    creates: "{{ home }}/.local/bin/claude"
