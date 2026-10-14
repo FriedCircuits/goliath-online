@@ -9,6 +9,7 @@ system_packages:
   - dnsutils
   - netcat-traditional
   - jq
+  - ripgrep
   - make
   - dos2unix
 
@@ -17,6 +18,7 @@ install:
   brew: no
   claude_code: no
   codeserver: no
+  codex: no
   docker_cli: yes
   gruntwork: yes
   hashicorp: yes

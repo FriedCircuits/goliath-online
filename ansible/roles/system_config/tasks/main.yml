@@ -52,6 +52,10 @@
   include_tasks: claude_code.yml
   when: install.claude_code
 
+- name: Install OpenAI Codex
+  include_tasks: codex.yml
+  when: install.codex
+
 - name: Home | Copy files
   copy:
     src: ../../files/

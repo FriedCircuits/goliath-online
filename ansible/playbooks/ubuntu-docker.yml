@@ -28,6 +28,7 @@
       brew: no
       claude_code: yes
       codeserver: yes
+      codex: yes
       docker_cli: yes
       gruntwork: yes
       hashicorp: yes
