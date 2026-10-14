@@ -7,6 +7,7 @@ fi
 
 source "build.cfg"
 source "VERSION"
+export GITHUB_TOKEN
 
 SECONDS=0
 DOCKER_BUILDKIT=1
@@ -31,7 +32,7 @@ docker build --rm \
   --build-arg TZ=$TZone \
   --build-arg ATUIN_SERVER=$ATUIN_SERVER \
   --build-arg ATUIN_VERSION=$ATUIN_VERSION \
-  --secret id=GITHUB_TOKEN,env=$GITHUB_TOKEN \
+  --secret id=GITHUB_TOKEN,env=GITHUB_TOKEN \
   -f Dockerfile .
 
 echo "Total Build Time: $(printf '%dh:%dm:%ds\n' $(($SECONDS / 3600)) $(($SECONDS % 3600 / 60)) $(($SECONDS % 60)))"
