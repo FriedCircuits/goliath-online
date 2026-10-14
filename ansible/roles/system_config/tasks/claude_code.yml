@@ -9,3 +9,15 @@
   command: "/tmp/claude-installer.sh {{ claude_code.channel }}"
   args:
     creates: "{{ home }}/.local/bin/claude"
+
+- name: Claude Code | Create Remote Control workspace
+  file:
+    path: "{{ claude_code.remote_control.workdir }}"
+    state: directory
+
+- name: Claude Code | Install Remote Control helper
+  template:
+    src: claude-rc.j2
+    dest: "{{ home }}/.bin/claude-rc"
+    mode: 0755
+  when: install.tmux
