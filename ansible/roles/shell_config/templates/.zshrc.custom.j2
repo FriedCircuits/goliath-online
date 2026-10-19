@@ -18,7 +18,6 @@ export PATH="$HOME/.bin:$PATH"
 export GPG_TTY=$(tty)
 
 {% if install.atuin %}
-export PATH="$HOME/.bin:$PATH"
 {% if atuin.db_on_tmpfs %}
 # Atuin keeps its SQLite on tmpfs (see ~/.config/atuin/config.toml). tmpfs is
 # cleared when the container restarts, so recreate the directory before atuin
