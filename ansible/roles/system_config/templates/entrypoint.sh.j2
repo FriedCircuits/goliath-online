@@ -12,8 +12,8 @@ echo " _____       _ _       _   _         ${TEXT}version: {{ version }}${LOGO}"
 echo "|  __ \     | (_)     | | | |        ${TEXT}user: {{ user }}${LOGO}"
 echo "| |  \/ ___ | |_  __ _| |_| |__      ${TEXT}home: /home/{{ user }}${LOGO}"
 echo "| | __ / _ \| | |/ _  | __|  _ \     ${TEXT}ssh server: {{ install.ssh_server }} ip: $(hostname --all-ip-addresses | awk '{print $1}')${LOGO}"
-echo "| |_\ \ (_) | | | (_| | |_| | | |    {% if install.bashhub %}${TEXT}bh server: {{ bashhub_server }}${LOGO}{% endif %}"
-echo " \____/\___/|_|_|\__,_|\__|_| |_|    {% if install.bashhub %}${TEXT}Run ~/bashhub_setup.sh to setup${LOGO}{% endif %}"
+echo "| |_\ \ (_) | | | (_| | |_| | | |    {% if install.atuin %}${TEXT}atuin: {{ atuin.server }}${LOGO}{% endif %}"
+echo " \____/\___/|_|_|\__,_|\__|_| |_|    {% if install.atuin %}${TEXT}Run atuin login or atuin register to sync${LOGO}{% endif %}"
 echo ' _____             _     _'
 echo '|  _  |           | |   (_)'
 echo '| | | |_ __ ______| |    _ _ __   ___'

@@ -1,0 +1,30 @@
+## Atuin configuration
+##
+## Written once at image build time with force: no, so edits made inside a
+## running container survive rebuilds. Delete the file to have it regenerated.
+##
+## Full reference: https://docs.atuin.sh/configuration/config/
+
+sync_address = "{{ atuin.server }}"
+
+{% if atuin.db_on_tmpfs %}
+## SQLite lives on tmpfs rather than the home directory.
+##
+## Atuin opens its databases in WAL mode, which memory-maps a -shm file. Several
+## filesystems commonly found under a container's home -- network mounts, and
+## some copy-on-write and bind-mounted volumes -- do not give mmap the coherency
+## SQLite expects. The symptom is a write-ahead log that grows without ever
+## checkpointing, followed by "database disk image is malformed".
+##
+## /dev/shm is a real tmpfs that Docker provides to every container by default,
+## so this needs no extra mount or privileges. It is cleared when the container
+## restarts, which is safe: with sync configured the history is held server-side
+## and `atuin sync` rebuilds the local copy. The key and session files stay on
+## persistent storage so a restart does not mean logging in again.
+##
+## Set atuin.db_on_tmpfs to false to keep the databases in the home directory.
+db_path = "/dev/shm/atuin/history.db"
+record_store_path = "/dev/shm/atuin/records.db"
+key_path = "{{ home }}/.local/share/atuin/key"
+session_path = "{{ home }}/.local/share/atuin/session"
+{% endif %}
