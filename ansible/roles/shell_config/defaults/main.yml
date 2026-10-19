@@ -1,6 +1,6 @@
 ---
-user: "{{ ansible_user_id }}"
-home: "/home/{{ ansible_user_id }}"
+user: "{{ ansible_facts['user_id'] }}"
+home: "/home/{{ ansible_facts['user_id'] }}"
 
 # Image size is ~500MB larger with spaceship due to nodejs.
 install_spaceship: true

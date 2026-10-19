@@ -11,7 +11,7 @@
     - name: hashicorp | apt source
       ansible.builtin.apt_repository:
         filename: hashicorp
-        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/hashicorp.asc] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
+        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/hashicorp.asc] https://apt.releases.hashicorp.com {{ ansible_facts['distribution_release'] }} main"
         state: present
         update_cache: true
 
