@@ -136,20 +136,16 @@ recover it.
 
 ### Database location
 
-The generated config puts atuin's SQLite databases on `/dev/shm` (tmpfs) rather
-than in the home directory. Atuin opens them in WAL mode, which memory-maps a
-`-shm` file, and several filesystems found under a container home -- network
-mounts, and some copy-on-write and bind-mounted volumes -- do not give mmap the
-coherency SQLite expects. The failure looks like a write-ahead log that grows
-without checkpointing, then `database disk image is malformed`.
+By default atuin keeps its SQLite databases in the home directory. If the
+container home is on a network mount (NFS, SMB) or some bind-mounted volumes,
+SQLite's WAL mode can misbehave: the write-ahead log grows without
+checkpointing, then `database disk image is malformed`.
 
-tmpfs is cleared when the container restarts, which is safe: with sync
-configured the history lives server-side and `atuin sync` rebuilds the local
-copy. The key and session files stay on persistent storage, so a restart does
-not require logging in again.
-
-Set `atuin.db_on_tmpfs: no` in the playbook to keep the databases in the home
-directory instead.
+Set `atuin.db_on_tmpfs: yes` in the playbook to move the databases to
+`/dev/shm` (tmpfs) instead. tmpfs is cleared when the container restarts, so
+only use this with sync configured: the history lives server-side and
+`atuin sync` rebuilds the local copy. The key and session files stay in the
+home directory, so a restart does not require logging in again.
 
 The config is written with `force: no`, so edits made inside a running container
 survive image rebuilds. Delete `~/.config/atuin/config.toml` to regenerate it.
