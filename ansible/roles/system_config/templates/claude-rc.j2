@@ -1,0 +1,61 @@
+#!/bin/bash
+# Run Claude Code Remote Control in a detached tmux session so it keeps
+# running after you disconnect. Connect from claude.ai/code or the Claude app.
+set -eu
+
+SESSION="claude-rc"
+WORKDIR="${CLAUDE_RC_WORKDIR:-{{ claude_code.remote_control.workdir }}}"
+SPAWN="${CLAUDE_RC_SPAWN:-{{ claude_code.remote_control.spawn }}}"
+CLAUDE="{{ home }}/.local/bin/claude"
+
+usage() {
+  echo "Usage: $(basename "$0") [attach|start|stop|status]"
+  echo "  attach  Start if needed and attach (default, detach with prefix + d)"
+  echo "  start   Start in the background"
+  echo "  stop    Stop the Remote Control server"
+  echo "  status  Show whether the server is running"
+}
+
+running() {
+  tmux has-session -t "$SESSION" 2>/dev/null
+}
+
+start() {
+  if running; then
+    return
+  fi
+  mkdir -p "$WORKDIR"
+  # Remote Control requires claude.ai subscription auth, API keys block it.
+  # Restart if the server exits, use "stop" to shut it down.
+  tmux new-session -d -s "$SESSION" -c "$WORKDIR" \
+    env -u ANTHROPIC_API_KEY -u ANTHROPIC_AUTH_TOKEN {% if not claude_code.auto_update %}DISABLE_AUTOUPDATER=1 {% endif %}\
+    bash -c "while true; do \"$CLAUDE\" remote-control --name \"\$(hostname)\" --spawn \"$SPAWN\"; echo 'Restarting in 10s...'; sleep 10; done"
+  echo "Remote Control started in tmux session '$SESSION' ($WORKDIR)"
+}
+
+case "${1:-attach}" in
+  attach)
+    start
+    exec tmux attach-session -t "$SESSION"
+    ;;
+  start)
+    start
+    ;;
+  stop)
+    if running; then
+      tmux kill-session -t "$SESSION"
+    fi
+    ;;
+  status)
+    if running; then
+      echo "running"
+    else
+      echo "stopped"
+      exit 1
+    fi
+    ;;
+  *)
+    usage
+    exit 1
+    ;;
+esac

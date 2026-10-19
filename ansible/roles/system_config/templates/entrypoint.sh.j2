@@ -30,4 +30,12 @@ sleep 30
 echo "$(cat /home/{{ user }}/.config/code-server/config.yaml)"
 {% endif %}
 
+{% if install.claude_code and install.tmux and claude_code.remote_control.autostart %}
+if [ -f "${CLAUDE_CONFIG_DIR:-/home/{{ user }}/.claude}/.credentials.json" ]; then
+  /home/{{ user }}/.bin/claude-rc start
+else
+  echo "Claude Remote Control: run 'claude auth login', then 'claude-rc' to finish setup"
+fi
+{% endif %}
+
 exec "$@"

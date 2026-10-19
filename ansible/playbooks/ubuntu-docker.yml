@@ -15,11 +15,20 @@
       db_on_tmpfs: no
     codeserver:
       auth: yes # Set to no when using another front end for auth, password shown at first boot
+    claude_code:
+      channel: stable # stable, latest or a pinned version such as 2.1.89
+      auto_update: yes
+      remote_control:
+        autostart: no # Start claude-rc on boot once logged in, requires tmux
+        spawn: same-dir # same-dir, worktree (needs a git repo) or session
+        workdir: "{{ home }}/workspace" # Claude will not trust $HOME as a workspace
     install:
       awscli: yes
       atuin: yes
       brew: no
+      claude_code: yes
       codeserver: yes
+      codex: yes
       docker_cli: yes
       gruntwork: yes
       hashicorp: yes
@@ -48,4 +57,5 @@
       linuxbrew_install_checksum: "sha256:9af575eb52eda83d546963db3ebed65d840738bc533ca195dcf3eb6ca2d6c7e7"
       when: install.brew
     - role: deekayen.awscli2
+      become: yes
       when: install.awscli

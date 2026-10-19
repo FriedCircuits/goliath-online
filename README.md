@@ -17,6 +17,8 @@ This is a gaint docker container meant to be a portable DevOps environment you c
 - Kubernetes CLI/Helm
 - Custom tmux/vim themes
 - Atuin shell history sync (self-hosted or public server)
+- Claude Code with Remote Control
+- OpenAI Codex CLI
 
 ***
 
@@ -80,6 +82,38 @@ Some examples of mounting your local enviornment. Add the following to your `doc
 You could map your entire home directory to the containers user but it's not recommended.
 
 - `-v ~/:/home/$BUILD_USER`
+
+### AI Coding Agents
+
+Claude Code and the OpenAI Codex CLI can be installed by setting
+`install.claude_code` and `install.codex` in the playbook. Both are
+installed for the build user, and their logins live in the home directory
+(`~/.claude`, `~/.claude.json` and `~/.codex`). Keep the home directory on a
+volume (as `docker-run.sh` does) so you stay logged in across restarts.
+If you only mount `~/.claude`, also set `-e CLAUDE_CONFIG_DIR=/home/$BUILD_USER/.claude`
+so `.claude.json` is stored there too.
+
+#### Claude Remote Control
+
+With the container running on a server, [Remote Control](https://code.claude.com/docs/en/remote-control)
+lets you start and drive Claude Code sessions from claude.ai/code or the
+Claude mobile app. It only makes outbound HTTPS connections, so no extra
+ports need to be exposed.
+
+Remote Control requires a claude.ai subscription login. API keys and
+`claude setup-token` tokens do not work with it.
+
+1. SSH or `docker exec` into the container and run `claude auth login`.
+2. Run `claude-rc` to start the server in a tmux session and attach to it.
+   Answer the one-time prompts, then detach with the tmux prefix + `d`.
+3. Open claude.ai/code or the Claude app and select the session named after
+   the container hostname.
+
+`claude-rc` also accepts `start`, `stop` and `status`. Sessions start in
+`~/workspace` by default. Clone repos there, or set `claude_code.remote_control`
+options in the playbook to change the directory or spawn mode. Set
+`autostart: yes` to start the server when the container boots once you are
+logged in. `claude-rc` requires `install.tmux`.
 
 ***
 
