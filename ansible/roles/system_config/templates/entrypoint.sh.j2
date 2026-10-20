@@ -25,9 +25,18 @@ echo
 echo " ${NOCOLOR}"
 
 {% if install.codeserver %}
-nohup code-server {% if not codeserver.auth %}--auth none{% endif %} --bind-addr 0.0.0.0:8080 /home/{{ user }} >> /tmp/code-server.out 2>> /tmp/code-server.err &
-sleep 30
-echo "$(cat /home/{{ user }}/.config/code-server/config.yaml)"
+nohup code-server {% if not codeserver.auth %}--auth none{% endif %} {% if codeserver.cert %}--cert{% endif %} --bind-addr 0.0.0.0:8443 /home/{{ user }} >> /tmp/code-server.out 2>> /tmp/code-server.err &
+# Wait for code-server to listen, it writes the password on first start.
+i=0
+while [ $i -lt 60 ] && ! grep -qs "server listening on" /tmp/code-server.out /tmp/code-server.err; do
+  sleep 1
+  i=$((i + 1))
+done
+# Settings come from the flags above, which override config.yaml.
+echo "code-server: {% if codeserver.cert %}https{% else %}http{% endif %} on port 8443"
+{% if codeserver.auth %}
+echo "password: $(sed -n 's/^password: //p' /home/{{ user }}/.config/code-server/config.yaml)"
+{% endif %}
 {% endif %}
 
 {% if install.claude_code and install.tmux and claude_code.remote_control.autostart %}

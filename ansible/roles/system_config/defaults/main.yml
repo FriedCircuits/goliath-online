@@ -41,6 +41,7 @@ brew_packages:
 
 codeserver:
   auth: yes # Disable if using your own auth such as authelia with traefik
+  cert: yes # Serve HTTPS with a self-signed certificate
 
 claude_code:
   channel: stable # stable, latest or a pinned version such as 2.1.89
