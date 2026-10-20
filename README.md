@@ -111,19 +111,32 @@ Remote Control requires a claude.ai subscription login. API keys and
 
 `claude-rc` also accepts `start`, `stop` and `status`. Sessions start in
 `~/workspace` by default. Clone repos there, or set `claude_code.remote_control`
-options in the playbook to change the directory or spawn mode. Set
-`autostart: yes` to start the server when the container boots once you are
-logged in. `claude-rc` requires `install.tmux`.
+options in the playbook to change the directory or spawn mode. Once you are
+logged in, the server starts when the container boots. Set `autostart: no` to
+start it by hand instead. `claude-rc` requires `install.tmux`.
 
 ***
 
 ## Running the Container
 
-Edit `docker_run.sh` for an example of mounting various home dir configs.
+On a Linux server, use Docker Compose so the container starts again after a
+reboot. Set `DOCKER_GID` in `build.cfg` to the group of the host Docker socket
+(`stat -c %g /var/run/docker.sock`), then run:
 
 ```shell
-./docker_run.sh
+docker compose --env-file build.cfg up -d
 ```
+
+For local use, `docker-run.sh` also mounts your host `~/.ssh`, `~/.kube`,
+`~/.aws`, `~/.zhistory` and `~/.docker` when they exist, and works with Docker
+Desktop on macOS.
+
+```shell
+./docker-run.sh
+```
+
+SSH is published on port 2222 by default so it does not clash with an SSH
+server on the host. Change `SSH_PORT` and `CODE_SERVER_PORT` in `build.cfg`.
 
 ***
 

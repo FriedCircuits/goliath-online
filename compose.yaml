@@ -1,0 +1,22 @@
+# Run on a Linux server with:
+#   docker compose --env-file build.cfg up -d
+# Values come from build.cfg, see build.cfg.example.
+services:
+  goliath:
+    image: ${IMAGE_NAME:-goliath}:latest
+    container_name: ${IMAGE_NAME:-goliath}
+    hostname: ${IMAGE_NAME:-goliath}
+    restart: unless-stopped
+    ports:
+      - "${SSH_PORT:-2222}:22"
+      - "${CODE_SERVER_PORT:-8080}:8080"
+    volumes:
+      - home:/home/${BUILD_USER:-ubuntu}
+      - /var/run/docker.sock:/var/run/docker.sock
+    # Group of the host Docker socket, find it with: stat -c %g /var/run/docker.sock
+    group_add:
+      - "${DOCKER_GID:?set DOCKER_GID in build.cfg}"
+
+volumes:
+  home:
+    name: ${IMAGE_NAME:-goliath}
