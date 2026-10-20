@@ -1,7 +1,8 @@
-ver = $(file < VERSION)
+ver = v$(shell sed -n 's/^VERSION="\(.*\)"/\1/p' VERSION)
 
+.PHONY: release
 release:
-	git tag $(ver) -s
-	git push --tags
-	git pull
-	gh release create $(ver)
+	git pull --ff-only
+	git tag -s $(ver) -m $(ver)
+	git push origin $(ver)
+	gh release create $(ver) --verify-tag --generate-notes
