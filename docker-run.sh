@@ -28,9 +28,10 @@ for path in .ssh .kube .aws .zhistory .docker; do
 done
 
 docker run -d \
+  --restart unless-stopped \
   "${RUN_ARGS[@]}" \
   -v "${IMAGE_NAME}:/home/${BUILD_USER}" \
-  -p "${SSH_PORT:-22}:22" \
+  -p "${SSH_PORT:-2222}:22" \
   -p "${CODE_SERVER_PORT:-8080}:8080" \
   --hostname="${IMAGE_NAME}" \
   --name "${IMAGE_NAME}" "${IMAGE_NAME}:latest"
