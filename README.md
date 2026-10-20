@@ -11,6 +11,7 @@ This is a gaint docker container meant to be a portable DevOps environment you c
 - Inject files at build time to home directory
 - Zsh Custom Prompt (spaceship|starship)
 - Docker CLI
+- Code Server (web VS Code)
 - SSH Server
 - Hashicorp tools
 - Gruntwork tools
@@ -82,6 +83,23 @@ Some examples of mounting your local enviornment. Add the following to your `doc
 You could map your entire home directory to the containers user but it's not recommended.
 
 - `-v ~/:/home/$BUILD_USER`
+
+### Code Server
+
+[code-server](https://github.com/coder/code-server) runs VS Code in the browser
+on port 8443. It is password protected and served over HTTPS with a
+self-signed certificate by default. The password is shown in the container
+output at startup.
+
+The certificate is generated on first start and kept in
+`~/.local/share/code-server/`. To get a trusted certificate, put it behind a
+reverse proxy such as Traefik and connect to the container over HTTPS, skipping
+verification of the self-signed certificate (for Traefik, a `serversTransport`
+with `insecureSkipVerify`). Keep the route internal, since code-server gives a
+shell in the container.
+
+Set `codeserver.cert: no` to serve plain HTTP on the same port, or `codeserver.auth: no` if
+your proxy handles authentication.
 
 ### AI Coding Agents
 
