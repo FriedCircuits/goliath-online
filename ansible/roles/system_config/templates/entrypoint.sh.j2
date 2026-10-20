@@ -3,6 +3,17 @@
 sudo service ssh restart > /dev/null 2>&1
 {% endif %}
 
+{% if install.docker_cli %}
+# Match the docker group to the host socket so SSH logins can use it.
+# Skip root owned sockets, such as Docker Desktop's.
+if [ -S /var/run/docker.sock ]; then
+  DOCKER_SOCK_GID=$(stat -c %g /var/run/docker.sock)
+  if [ "$DOCKER_SOCK_GID" != "0" ]; then
+    sudo groupmod -o -g "$DOCKER_SOCK_GID" docker
+  fi
+fi
+{% endif %}
+
 NOCOLOR='\033[0m'
 LOGO='\033[0;35m'
 TEXT='\033[0;32m'
