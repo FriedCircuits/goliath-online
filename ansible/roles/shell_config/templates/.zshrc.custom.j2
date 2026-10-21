@@ -49,3 +49,13 @@ alias tgS="terragrunt state"
 alias tgs="terragrunt show"
 alias tgv="terragrunt validate"
 {% endif %}
+
+{% if install.uv %}
+export UV_PYTHON_DOWNLOADS={{ uv.python_downloads }}
+{% endif %}
+{% if install.fnm %}
+eval "$(fnm env --use-on-cd --shell zsh)"
+{% endif %}
+{% if install.direnv %}
+eval "$(direnv hook zsh)"
+{% endif %}

@@ -12,6 +12,7 @@ system_packages:
   - ripgrep
   - make
   - dos2unix
+  - unzip
 
 # Configure which packages to install.
 install:
@@ -19,15 +20,26 @@ install:
   claude_code: no
   codeserver: no
   codex: no
+  direnv: no
   docker_cli: yes
+  fnm: no
+  github_known_hosts: no
   gruntwork: yes
   hashicorp: yes
+  k9s: no
   kubernetes_cli: yes
+  mosh: no
+  playwright_deps: no
   sops: yes
   ssh_server: yes
+  talosctl: no
   terraform: yes
+  terraform_docs: no
+  tflint: no
   tmux: yes
+  uv: no
   vim: yes
+  yq: no
 
 # If enabled above install these tools from Hashicorp repo.
 # Terraform is installed seperately above.
@@ -50,3 +62,8 @@ claude_code:
     autostart: yes # Start claude-rc on boot once logged in, requires tmux
     spawn: same-dir # same-dir, worktree (needs a git repo) or session
     workdir: "{{ home }}/workspace" # Claude will not trust $HOME as a workspace
+
+talosctl_version: latest # Or a version matching your cluster, such as 1.13.8
+
+uv:
+  python_downloads: manual # automatic, manual or never, see UV_PYTHON_DOWNLOADS

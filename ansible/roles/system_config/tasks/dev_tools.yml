@@ -1,0 +1,123 @@
+---
+# Optional developer tools. Binaries go to /usr/local/bin so they update with
+# each rebuild, see install in the playbook.
+
+- name: Dev tools | Install apt packages
+  become: yes
+  package:
+    name: "{{ item.package }}"
+    state: latest
+  loop:
+    - { package: direnv, enabled: "{{ install.direnv }}" }
+    - { package: mosh, enabled: "{{ install.mosh }}" }
+  when: item.enabled
+
+- name: Dev tools | Get latest releases
+  github_release:
+    user: "{{ item.repo.split('/')[0] }}"
+    repo: "{{ item.repo.split('/')[1] }}"
+    action: latest_release
+    token: "{{ github_token | default(omit) }}"
+  loop:
+    - { name: yq, repo: mikefarah/yq, enabled: "{{ install.yq }}" }
+    - { name: tflint, repo: terraform-linters/tflint, enabled: "{{ install.tflint }}" }
+    - { name: terraform_docs, repo: terraform-docs/terraform-docs, enabled: "{{ install.terraform_docs }}" }
+    - { name: k9s, repo: derailed/k9s, enabled: "{{ install.k9s }}" }
+    - { name: uv, repo: astral-sh/uv, enabled: "{{ install.uv }}" }
+    - { name: fnm, repo: Schniz/fnm, enabled: "{{ install.fnm }}" }
+  when: item.enabled
+  register: dev_tools_latest
+
+- name: Dev tools | Set release tags
+  set_fact:
+    dev_tools_tag: "{{ dev_tools_tag | default({}) | combine({item.item.name: item.tag}) }}"
+  loop: "{{ dev_tools_latest.results }}"
+  when: item.tag is defined
+  loop_control:
+    label: "{{ item.item.name }}"
+
+- name: Dev tools | Install yq
+  become: yes
+  get_url:
+    url: "https://github.com/mikefarah/yq/releases/download/{{ dev_tools_tag.yq }}/yq_linux_amd64"
+    dest: /usr/local/bin/yq
+    mode: 0755
+  when: install.yq
+
+- name: Dev tools | Install talosctl
+  become: yes
+  get_url:
+    url: "https://github.com/siderolabs/talos/releases/{{ 'latest/download' if talosctl_version == 'latest' else 'download/v' ~ (talosctl_version | regex_replace('^v', '')) }}/talosctl-linux-amd64"
+    dest: /usr/local/bin/talosctl
+    mode: 0755
+  when: install.talosctl
+
+- name: Dev tools | Set archives
+  set_fact:
+    dev_tools_archives:
+      - enabled: "{{ install.tflint }}"
+        url: "https://github.com/terraform-linters/tflint/releases/download/{{ dev_tools_tag.tflint | default('') }}/tflint_linux_amd64.zip"
+        binaries: [tflint]
+      - enabled: "{{ install.terraform_docs }}"
+        url: "https://github.com/terraform-docs/terraform-docs/releases/download/{{ dev_tools_tag.terraform_docs | default('') }}/terraform-docs-{{ dev_tools_tag.terraform_docs | default('') }}-linux-amd64.tar.gz"
+        binaries: [terraform-docs]
+      - enabled: "{{ install.k9s }}"
+        url: "https://github.com/derailed/k9s/releases/download/{{ dev_tools_tag.k9s | default('') }}/k9s_Linux_amd64.tar.gz"
+        binaries: [k9s]
+      - enabled: "{{ install.uv }}"
+        url: "https://github.com/astral-sh/uv/releases/download/{{ dev_tools_tag.uv | default('') }}/uv-x86_64-unknown-linux-gnu.tar.gz"
+        binaries: [uv-x86_64-unknown-linux-gnu/uv, uv-x86_64-unknown-linux-gnu/uvx]
+      - enabled: "{{ install.fnm }}"
+        url: "https://github.com/Schniz/fnm/releases/download/{{ dev_tools_tag.fnm | default('') }}/fnm-linux.zip"
+        binaries: [fnm]
+
+- name: Dev tools | Download archives
+  get_url:
+    url: "{{ item.url }}"
+    dest: "/tmp/{{ item.url | basename }}"
+    mode: 0600
+  loop: "{{ dev_tools_archives }}"
+  when: item.enabled
+  loop_control:
+    label: "{{ item.url | basename }}"
+
+- name: Dev tools | Unarchive
+  unarchive:
+    src: "/tmp/{{ item.url | basename }}"
+    dest: /tmp/
+    remote_src: yes
+  loop: "{{ dev_tools_archives }}"
+  when: item.enabled
+  loop_control:
+    label: "{{ item.url | basename }}"
+
+- name: Dev tools | Install binaries from archives
+  become: yes
+  copy:
+    src: "/tmp/{{ item.1 }}"
+    dest: "/usr/local/bin/{{ item.1 | basename }}"
+    mode: 0755
+    remote_src: yes
+  loop: "{{ dev_tools_archives | selectattr('enabled') | subelements('binaries') }}"
+  loop_control:
+    label: "{{ item.1 | basename }}"
+
+# Published by GitHub over HTTPS, so git@github.com remotes work without a
+# first connection prompt.
+- name: Dev tools | Get GitHub SSH host keys
+  uri:
+    url: https://api.github.com/meta
+    return_content: yes
+  register: github_meta
+  when: install.github_known_hosts
+
+- name: Dev tools | Add GitHub SSH host keys
+  become: yes
+  copy:
+    dest: /etc/ssh/ssh_known_hosts
+    content: |
+      {% for key in github_meta.json.ssh_keys %}
+      github.com {{ key }}
+      {% endfor %}
+    mode: 0644
+  when: install.github_known_hosts
