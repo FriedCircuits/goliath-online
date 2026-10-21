@@ -17,9 +17,10 @@
     creates: "/tmp/atuin-{{ atuin.arch }}-unknown-linux-musl"
 
 - name: Install atuin binary
+  become: yes
   copy:
     src: "/tmp/atuin-{{ atuin.arch }}-unknown-linux-musl/atuin"
-    dest: "{{ home }}/.bin/atuin"
+    dest: /usr/local/bin/atuin
     remote_src: yes
     mode: 0755
 

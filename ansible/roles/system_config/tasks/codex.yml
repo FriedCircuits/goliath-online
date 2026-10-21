@@ -19,8 +19,9 @@
     remote_src: yes
 
 - name: Codex | Install latest
+  become: yes
   copy:
     src: /tmp/codex-x86_64-unknown-linux-musl
-    dest: "{{ home }}/.bin/codex"
-    mode: 0700
+    dest: /usr/local/bin/codex
+    mode: 0755
     remote_src: yes

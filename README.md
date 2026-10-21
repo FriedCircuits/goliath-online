@@ -45,6 +45,10 @@ placing them in `ansible/files/`.
 These files and directories will be copied to the build users home
 directory. For example if you want your ssh keys copied, you can plop them in `.ssh` and they will be injected during build time.
 
+Tools are installed to `/usr/local/bin` so they update with each rebuild.
+`~/.bin` is on the `PATH` ahead of it for your own tools, such as a version of
+Terraform picked with `tfs`.
+
 ### Running the build
 
 Once you are happy with your configuation run the follow.
