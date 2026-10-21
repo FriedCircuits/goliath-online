@@ -7,10 +7,11 @@
   register: sops_latest
 
 - name: SOPS | Install latest
+  become: yes
   get_url:
     url: "https://github.com/mozilla/sops/releases/download/{{ sops_latest['tag'] }}/sops-{{ sops_latest['tag'] }}.linux.amd64"
-    dest: "{{ home }}/.bin/sops"
-    mode: 0700
+    dest: /usr/local/bin/sops
+    mode: 0755
 
 - name: SOPS | Get latest age
   github_release:
@@ -33,9 +34,16 @@
 - name: SOPS | Unarchive latest age
   ansible.builtin.unarchive:
     src: "/tmp/{{ age_filename }}"
-    dest: "{{ home }}/.bin/"
-    exclude:
-     - LICENSE
-    mode: 0700
+    dest: /tmp/
     remote_src: yes
-  when: install.terraform
+
+- name: SOPS | Install latest age
+  become: yes
+  copy:
+    src: "/tmp/age/{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    mode: 0755
+    remote_src: yes
+  loop:
+    - age
+    - age-keygen
