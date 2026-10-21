@@ -15,7 +15,8 @@ This is a gaint docker container meant to be a portable DevOps environment you c
 - SSH Server
 - Hashicorp tools
 - Gruntwork tools
-- Kubernetes CLI/Helm
+- Kubernetes CLI/Helm, k9s, talosctl
+- tflint, terraform-docs, yq, direnv, uv, fnm
 - Custom tmux/vim themes
 - Atuin shell history sync (self-hosted or public server)
 - Claude Code with Remote Control
@@ -48,6 +49,30 @@ directory. For example if you want your ssh keys copied, you can plop them in `.
 Tools are installed to `/usr/local/bin` so they update with each rebuild.
 `~/.bin` is on the `PATH` ahead of it for your own tools, such as a version of
 Terraform picked with `tfs`.
+
+The image's shell settings live in `/etc/goliath/zshrc` for the same reason.
+`~/.zshrc.custom` loads them, and anything you add below that line is kept
+across rebuilds.
+
+### Optional Tools
+
+Each tool has a flag under `install` in the playbook.
+
+- `direnv`, `fnm`, `k9s`, `talosctl`, `terraform_docs`, `tflint`, `uv` and `yq`
+  are on by default. Set `talosctl_version` to match your cluster.
+- `uv` only downloads Python versions when asked to (`uv python install`). Set
+  `uv.python_downloads` to `automatic` to let projects fetch the version they
+  need.
+- `fnm` manages Node versions in your home directory, for example
+  `fnm install 24 && fnm default 24`.
+- `github_known_hosts` adds GitHub's published SSH host keys, so
+  `git@github.com:` remotes work without a prompt.
+- `playwright_deps` installs the system libraries for Playwright's Chromium.
+  It is off by default since it adds a few hundred MB. Browsers are still
+  installed per project with `npx playwright install chromium`.
+- `mosh` is off by default. When enabled, publish a UDP range for it in
+  `compose.yaml` and connect with
+  `mosh --ssh="ssh -p 2222" -p 60000:60010 user@host`.
 
 ### Running the build
 

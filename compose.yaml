@@ -10,6 +10,8 @@ services:
     ports:
       - "${SSH_PORT:-2222}:22"
       - "${CODE_SERVER_PORT:-8443}:8443"
+      # For install.mosh, a small range keeps the number of proxies down
+      # - "60000-60010:60000-60010/udp"
     volumes:
       - home:/home/${BUILD_USER:-ubuntu}
       - /var/run/docker.sock:/var/run/docker.sock
