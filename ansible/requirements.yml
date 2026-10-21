@@ -1,7 +1,10 @@
 ---
 roles:
-  - markosamuli.linuxbrew
-  - deekayen.awscli2
+  - name: markosamuli.linuxbrew
+    version: v2.0.2
+  - name: deekayen.awscli2
+    version: 2.0.0
 
 collections:
   - name: community.general
+    version: 13.5.0
