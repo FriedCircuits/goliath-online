@@ -142,8 +142,13 @@ reboot. Set `DOCKER_GID` in `build.cfg` to the group of the host Docker socket
 (`stat -c %g /var/run/docker.sock`), then run:
 
 ```shell
-docker compose --env-file build.cfg up -d
+make up
 ```
+
+Run `make` to list the other targets. `make upgrade` pulls the repo, rebuilds
+the image and recreates the container, keeping the home volume. Run it on the
+Docker host, since recreating the container from inside it would stop
+halfway.
 
 For local use, `docker-run.sh` also mounts your host `~/.ssh`, `~/.kube`,
 `~/.aws`, `~/.zhistory` and `~/.docker` when they exist, and works with Docker
