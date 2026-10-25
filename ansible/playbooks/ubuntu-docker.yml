@@ -22,6 +22,7 @@
       remote_control:
         autostart: yes # Start claude-rc on boot once logged in, requires tmux
         spawn: same-dir # same-dir, worktree (needs a git repo) or session
+        permission_mode: auto # auto, acceptEdits, plan or default, for sessions started remotely
         workdir: "{{ home }}/workspace" # Claude will not trust $HOME as a workspace
     talosctl_version: latest # Or a version matching your cluster, such as 1.13.8
     uv:

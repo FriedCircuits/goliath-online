@@ -158,7 +158,9 @@ Remote Control requires a claude.ai subscription login. API keys and
 
 `claude-rc` also accepts `start`, `stop` and `status`. Sessions start in
 `~/workspace` by default. Clone repos there, or set `claude_code.remote_control`
-options in the playbook to change the directory or spawn mode. Once you are
+options in the playbook to change the directory, spawn mode or permission mode.
+Sessions start in auto mode, where Claude Code checks each action and blocks
+risky ones such as force pushes or `terraform destroy`. Once you are
 logged in, the server starts when the container boots. Set `autostart: no` to
 start it by hand instead. `claude-rc` requires `install.tmux`.
 
