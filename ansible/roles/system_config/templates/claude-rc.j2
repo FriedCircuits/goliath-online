@@ -6,6 +6,7 @@ set -eu
 SESSION="claude-rc"
 WORKDIR="${CLAUDE_RC_WORKDIR:-{{ claude_code.remote_control.workdir }}}"
 SPAWN="${CLAUDE_RC_SPAWN:-{{ claude_code.remote_control.spawn }}}"
+PERMISSION_MODE="${CLAUDE_RC_PERMISSION_MODE:-{{ claude_code.remote_control.permission_mode }}}"
 CLAUDE="{{ home }}/.local/bin/claude"
 
 usage() {
@@ -29,7 +30,7 @@ start() {
   # Restart if the server exits, use "stop" to shut it down.
   tmux new-session -d -s "$SESSION" -c "$WORKDIR" \
     env -u ANTHROPIC_API_KEY -u ANTHROPIC_AUTH_TOKEN {% if not claude_code.auto_update %}DISABLE_AUTOUPDATER=1 {% endif %}\
-    bash -c "while true; do \"$CLAUDE\" remote-control --name \"\$(hostname)\" --spawn \"$SPAWN\"; echo 'Restarting in 10s...'; sleep 10; done"
+    bash -c "while true; do \"$CLAUDE\" remote-control --name \"\$(hostname)\" --spawn \"$SPAWN\" --permission-mode \"$PERMISSION_MODE\"; echo 'Restarting in 10s...'; sleep 10; done"
   echo "Remote Control started in tmux session '$SESSION' ($WORKDIR)"
 }
 
