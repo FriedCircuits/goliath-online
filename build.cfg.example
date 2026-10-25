@@ -3,7 +3,7 @@ BUILD_USER="ubuntu"
 # Public Atuin service; override to point at a self-hosted server.
 ATUIN_SERVER="https://api.atuin.sh"
 # renovate: datasource=github-releases depName=atuinsh/atuin extractVersion=^v(?<version>.+)$
-ATUIN_VERSION="18.19.0"
+ATUIN_VERSION="18.24.1"
 GITHUB_TOKEN=""
 
 # TZ
