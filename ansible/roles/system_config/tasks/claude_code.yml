@@ -16,8 +16,9 @@
     state: directory
 
 - name: Claude Code | Install Remote Control helper
+  become: yes
   template:
     src: claude-rc.j2
-    dest: "{{ home }}/.bin/claude-rc"
+    dest: /usr/local/bin/claude-rc
     mode: 0755
   when: install.tmux

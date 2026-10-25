@@ -55,29 +55,24 @@
 - name: Hashicorp | Unarchive tfswitch
   ansible.builtin.unarchive:
     src: "/tmp/{{ tfswitcher_filename }}"
-    dest: "{{ home }}/.bin/"
-    exclude:
-      - README.md
-      - LICENSE
-    mode: 0700
+    dest: /tmp/
+    include:
+      - tfswitch
+    remote_src: yes
+  when: install.terraform
+
+- name: Hashicorp | Install tfswitch
+  become: yes
+  copy:
+    src: /tmp/tfswitch
+    dest: /usr/local/bin/tfswitch
+    mode: 0755
     remote_src: yes
   when: install.terraform
 
 - name: Hashicorp | tfswitch usage https://tfswitch.warrensbox.com/Install/
   ansible.builtin.debug:
     msg: "To use tfswitch use alias tfs <VERSION>. You can use tfswitch -l to list but not switch."
-  when: install.terraform
-
-- name: Hashicorp | Get latest terraform
-  github_release:
-    user: hashicorp
-    repo: terraform
-    action: latest_release
-    token: "{{ github_token | default(omit) }}"
-  register: terraform_latest
-
-- name: Hashicorp | tfswitch first run
-  command: "{{ home }}/.bin/tfswitch -b {{ home }}/.bin/terraform {{ terraform_latest['tag'] | regex_replace('^v','') }}"
   when: install.terraform
 
 - name: Hashicorp | Terraform Cache Dir

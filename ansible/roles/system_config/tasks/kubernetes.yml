@@ -2,7 +2,7 @@
 - name: Kubernetes | Install kubectl
   become: yes
   get_url:
-    url: https://storage.googleapis.com/kubernetes-release/release/{{ lookup('url', 'https://storage.googleapis.com/kubernetes-release/release/stable.txt', wantlist=False, split_lines=false ) }}/bin/linux/amd64/kubectl
+    url: https://dl.k8s.io/release/{{ lookup('url', 'https://dl.k8s.io/release/stable.txt', wantlist=False, split_lines=false ) }}/bin/linux/amd64/kubectl
     dest: "/usr/bin/kubectl"
     mode: 0755
 

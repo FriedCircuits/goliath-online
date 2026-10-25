@@ -3,6 +3,17 @@
 sudo service ssh restart > /dev/null 2>&1
 {% endif %}
 
+# Tools used to be installed into ~/.bin, where the home volume kept stale
+# copies that hid newer ones in /usr/local/bin. Remove those once.
+if [ ! -e /home/{{ user }}/.bin/.goliath-cleaned ]; then
+  for f in sops age age-keygen terragrunt tfswitch codex atuin claude-rc CHANGELOG.md completions; do
+    if [ -e "/home/{{ user }}/.bin/$f" ]; then
+      rm -rf "/home/{{ user }}/.bin/$f" && echo "Removed old ~/.bin/$f"
+    fi
+  done
+  mkdir -p /home/{{ user }}/.bin && touch /home/{{ user }}/.bin/.goliath-cleaned
+fi
+
 {% if install.docker_cli %}
 # Match the docker group to the host socket so SSH logins can use it.
 # Skip root owned sockets, such as Docker Desktop's.
@@ -52,7 +63,7 @@ echo "password: $(sed -n 's/^password: //p' /home/{{ user }}/.config/code-server
 
 {% if install.claude_code and install.tmux and claude_code.remote_control.autostart %}
 if [ -f "${CLAUDE_CONFIG_DIR:-/home/{{ user }}/.claude}/.credentials.json" ]; then
-  /home/{{ user }}/.bin/claude-rc start
+  /usr/local/bin/claude-rc start
 else
   echo "Claude Remote Control: run 'claude auth login', then 'claude-rc' to finish setup"
 fi
