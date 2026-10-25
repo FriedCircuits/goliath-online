@@ -48,6 +48,9 @@
   include_tasks: sops.yml
   when: install.sops
 
+- name: Install developer tools
+  include_tasks: dev_tools.yml
+
 - name: Install Claude Code
   include_tasks: claude_code.yml
   when: install.claude_code

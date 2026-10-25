@@ -26,12 +26,29 @@
     owner: "{{ user }}"
     group: "{{ user }}"
 
+# Kept outside the home volume so it updates with each rebuild.
+- name: Set image zshrc
+  become: yes
+  block:
+    - name: Create /etc/goliath
+      file:
+        path: /etc/goliath
+        state: directory
+        mode: 0755
+
+    - name: Set /etc/goliath/zshrc
+      template:
+        src: .zshrc.custom.j2
+        dest: /etc/goliath/zshrc
+        mode: 0644
+
 - name: Set .zshrc.custom
   template:
-    src: .zshrc.custom.j2
+    src: .zshrc.custom.user.j2
     dest: "{{ home }}/.zshrc.custom"
     owner: "{{ user }}"
     group: "{{ user }}"
+    force: no
 
 - name: Make directory .zsh.d
   file:

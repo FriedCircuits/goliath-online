@@ -14,6 +14,15 @@ if [ ! -e /home/{{ user }}/.bin/.goliath-cleaned ]; then
   mkdir -p /home/{{ user }}/.bin && touch /home/{{ user }}/.bin/.goliath-cleaned
 fi
 
+# ~/.zshrc.custom used to hold the image's shell settings, which now live in
+# /etc/goliath/zshrc. Move an old copy aside once.
+ZSHRC_CUSTOM=/home/{{ user }}/.zshrc.custom
+if [ -f "$ZSHRC_CUSTOM" ] && ! grep -q /etc/goliath/zshrc "$ZSHRC_CUSTOM"; then
+  mv "$ZSHRC_CUSTOM" "$ZSHRC_CUSTOM.bak"
+  printf '# Image settings, updated with each rebuild.\nsource /etc/goliath/zshrc\n\n# Your own settings below.\n' > "$ZSHRC_CUSTOM"
+  echo "Moved old ~/.zshrc.custom to ~/.zshrc.custom.bak"
+fi
+
 {% if install.docker_cli %}
 # Match the docker group to the host socket so SSH logins can use it.
 # Skip root owned sockets, such as Docker Desktop's.

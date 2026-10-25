@@ -28,16 +28,16 @@
         repo: deb [arch=amd64 signed-by=/etc/apt/keyrings/nodesource.asc] https://deb.nodesource.com/node_22.x nodistro main
         state: present
         update_cache: true
-  when: install_spaceship
+  when: install_spaceship or install.playwright_deps
 
-- name: Install nodejs for Spaceship
+- name: Install nodejs for Spaceship and Playwright
   become: yes
   package:
     name:
       - nodejs
     state: latest
     update_cache: yes
-  when: install_spaceship
+  when: install_spaceship or install.playwright_deps
 
 - name: Download Starship
   get_url:

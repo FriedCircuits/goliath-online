@@ -23,6 +23,9 @@
         autostart: yes # Start claude-rc on boot once logged in, requires tmux
         spawn: same-dir # same-dir, worktree (needs a git repo) or session
         workdir: "{{ home }}/workspace" # Claude will not trust $HOME as a workspace
+    talosctl_version: latest # Or a version matching your cluster, such as 1.13.8
+    uv:
+      python_downloads: manual # automatic, manual or never, see UV_PYTHON_DOWNLOADS
     install:
       awscli: yes
       atuin: yes
@@ -30,15 +33,26 @@
       claude_code: yes
       codeserver: yes
       codex: yes
+      direnv: yes
       docker_cli: yes
+      fnm: yes
+      github_known_hosts: yes
       gruntwork: yes
       hashicorp: yes
+      k9s: yes
       kubernetes_cli: yes
+      mosh: no # Also publish UDP ports, see the README
+      playwright_deps: no # Libraries for Playwright's Chromium, a few hundred MB
       sops: yes
       ssh_server: yes
+      talosctl: yes
       terraform: yes
+      terraform_docs: yes
+      tflint: yes
       tmux: yes
+      uv: yes
       vim: yes
+      yq: yes
 
   pre_tasks:
     - name: Set Version ENV
@@ -60,3 +74,10 @@
     - role: deekayen.awscli2
       become: yes
       when: install.awscli
+
+  # Runs after shell_config, which installs nodejs.
+  post_tasks:
+    - name: Install Playwright system dependencies for Chromium
+      become: yes
+      command: npx -y playwright@latest install-deps chromium
+      when: install.playwright_deps
