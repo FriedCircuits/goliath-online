@@ -7,7 +7,7 @@ ARG VERSION=0.0.0
 # Defaults to the public Atuin service; override to point at a self-hosted one.
 ARG ATUIN_SERVER="https://api.atuin.sh"
 # renovate: datasource=github-releases depName=atuinsh/atuin extractVersion=^v(?<version>.+)$
-ARG ATUIN_VERSION="18.19.0"
+ARG ATUIN_VERSION="18.24.1"
 ENV GOLIATH_VERISON=${VERSION}
 
 RUN apt-get update -y && \
