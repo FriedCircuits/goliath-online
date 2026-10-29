@@ -170,9 +170,9 @@ so after a longer outage they drop off claude.ai. Their history is still saved.
 `claude-rc resume <number|id>...` reopens them in the background with Remote
 Control on, so they show up in the app again. `claude-rc resume all` reopens
 every chat from the last 7 days (set `CLAUDE_RC_RESUME_DAYS` to change that).
-Chats that are already open are skipped. Claude Code sometimes reopens a chat
-as a copy with a new ID. The ID it prints is the one to pass to
-`claude stop <id>` when you are done with the chat.
+Chats that are already open are skipped. `claude-rc close <number|id>...`
+stops reopened chats when you are done with them, and `claude-rc close all`
+stops all of them. Their history is kept, so they can be reopened again.
 
 ***
 
