@@ -18,6 +18,12 @@ fi
 sudo service ssh restart > /dev/null 2>&1
 {% endif %}
 
+{% if install.claude_code %}
+# Nothing runs yet, so these records are left from an earlier container.
+# Claude Code takes them for open chats and resumes those as copies.
+rm -f "${CLAUDE_CONFIG_DIR:-/home/{{ user }}/.claude}"/sessions/*.json "${CLAUDE_CONFIG_DIR:-/home/{{ user }}/.claude}"/sessions/*.key
+{% endif %}
+
 # Tools used to be installed into ~/.bin, where the home volume kept stale
 # copies that hid newer ones in /usr/local/bin. Remove those once.
 if [ ! -e /home/{{ user }}/.bin/.goliath-cleaned ]; then
