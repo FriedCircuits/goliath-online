@@ -1,5 +1,20 @@
 #!/bin/bash
 {% if install.ssh_server %}
+# Keep the SSH host keys in the home volume so a rebuilt image keeps the
+# same fingerprint. The first start generates them.
+HOST_KEYS=/home/{{ user }}/.local/share/goliath/ssh
+if ls "$HOST_KEYS"/ssh_host_*_key > /dev/null 2>&1; then
+  sudo cp "$HOST_KEYS"/ssh_host_* /etc/ssh/
+  sudo chown root:root /etc/ssh/ssh_host_*
+  sudo chmod 600 /etc/ssh/ssh_host_*_key
+  sudo chmod 644 /etc/ssh/ssh_host_*_key.pub
+else
+  sudo ssh-keygen -A > /dev/null
+  mkdir -p "$HOST_KEYS"
+  chmod 700 "$HOST_KEYS"
+  sudo cp /etc/ssh/ssh_host_* "$HOST_KEYS"/
+  sudo chown "$(id -u):$(id -g)" "$HOST_KEYS"/ssh_host_*
+fi
 sudo service ssh restart > /dev/null 2>&1
 {% endif %}
 
