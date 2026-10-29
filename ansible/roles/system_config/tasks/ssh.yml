@@ -3,3 +3,10 @@
   package:
     name:  openssh-server
     state: latest
+
+# The entrypoint generates host keys on first start, so every container
+# built from the image doesn't share the same ones.
+- name: SSH | Remove host keys made at build
+  become: yes
+  shell: rm -f /etc/ssh/ssh_host_*
+  changed_when: true
