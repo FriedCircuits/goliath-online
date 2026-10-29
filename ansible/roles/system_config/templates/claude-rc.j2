@@ -79,7 +79,7 @@ resume_chat() {
     return
   fi
   (cd "$WORKDIR" && env -u ANTHROPIC_API_KEY -u ANTHROPIC_AUTH_TOKEN {% if not claude_code.auto_update %}DISABLE_AUTOUPDATER=1 {% endif %}\
-    "$CLAUDE" --bg --resume "$id" --remote-control --permission-mode "$PERMISSION_MODE") | head -1
+    "$CLAUDE" --bg --resume "$id" --remote-control --permission-mode "$PERMISSION_MODE") | grep -v '^  claude '
 }
 
 resume() {
@@ -99,6 +99,7 @@ resume() {
         resume_chat "$(basename "$f" .jsonl)" "$running"
       fi
     done
+    stop_hint
     return
   fi
   for arg in "$@"; do
@@ -117,6 +118,12 @@ resume() {
     fi
     resume_chat "$(basename "$match" .jsonl)" "$running"
   done
+  stop_hint
+}
+
+# Claude Code may reopen a chat as a copy with a new ID, so point at that.
+stop_hint() {
+  echo "Stop a chat with: claude stop <id from 'backgrounded' above>"
 }
 
 case "${1:-attach}" in
