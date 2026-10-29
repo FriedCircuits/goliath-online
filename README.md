@@ -95,6 +95,10 @@ This container can be configured for different roles. Here are few examples to g
 
  Be sure to enable `ssh_server: yes` in the ansible playbook `ubuntu-docker.yml`.
 
+ The SSH host keys are generated on the first start and kept in the home
+ volume under `~/.local/share/goliath/ssh`, so rebuilding the image does not
+ change the fingerprint.
+
 ### Local
 
 If you want to run the container locally you can run it on demand or keep it running in the background and `docker exec -it` when needed. If SSH server is enabled you could SSH in locally to the container.
