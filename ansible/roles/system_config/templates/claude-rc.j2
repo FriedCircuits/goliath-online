@@ -7,14 +7,18 @@ SESSION="claude-rc"
 WORKDIR="${CLAUDE_RC_WORKDIR:-{{ claude_code.remote_control.workdir }}}"
 SPAWN="${CLAUDE_RC_SPAWN:-{{ claude_code.remote_control.spawn }}}"
 PERMISSION_MODE="${CLAUDE_RC_PERMISSION_MODE:-{{ claude_code.remote_control.permission_mode }}}"
+RESUME_DAYS="${CLAUDE_RC_RESUME_DAYS:-7}"
 CLAUDE="{{ home }}/.local/bin/claude"
+PROJECTS="${CLAUDE_CONFIG_DIR:-{{ home }}/.claude}/projects"
 
 usage() {
-  echo "Usage: $(basename "$0") [attach|start|stop|status]"
+  echo "Usage: $(basename "$0") [attach|start|stop|status|resume]"
   echo "  attach  Start if needed and attach (default, detach with prefix + d)"
   echo "  start   Start in the background"
   echo "  stop    Stop the Remote Control server"
   echo "  status  Show whether the server is running"
+  echo "  resume  List saved chats, or reopen them in Remote Control:"
+  echo "          resume <number|id>...  or  resume all (last $RESUME_DAYS days)"
 }
 
 running() {
@@ -34,6 +38,87 @@ start() {
   echo "Remote Control started in tmux session '$SESSION' ($WORKDIR)"
 }
 
+# Saved chats for WORKDIR, newest first.
+transcripts() {
+  ls -t "$PROJECTS/$(printf '%s' "$WORKDIR" | sed 's/[^A-Za-z0-9]/-/g')"/*.jsonl 2>/dev/null || true
+}
+
+running_ids() {
+  "$CLAUDE" agents --json | jq -r '.[].sessionId'
+}
+
+title() {
+  jq -rRn '[inputs | fromjson?] as $e
+    | ([$e[] | .customTitle // .summary // empty] | last)
+      // ([$e[] | select(.type == "user" and (.message.content | type) == "string") | .message.content] | first)
+      // ([$e[] | .lastPrompt // empty] | last)
+      // ""
+    | gsub("\\s+"; " ") | .[0:70]' "$1"
+}
+
+list_chats() {
+  local running n=0 f id state
+  running=$(running_ids)
+  while read -r f; do
+    n=$((n + 1))
+    id=$(basename "$f" .jsonl)
+    state=""
+    if grep -qx "$id" <<<"$running"; then state="running"; fi
+    printf '%3d  %s  %s  %-7s  %s\n' "$n" "${id:0:8}" "$(date -d "@$(stat -c %Y "$f")" '+%b %d %H:%M')" "$state" "$(title "$f")"
+  done < <(transcripts)
+  if [ "$n" -eq 0 ]; then
+    echo "No saved chats in $WORKDIR"
+  fi
+}
+
+# Reopen a chat in the background with Remote Control on, unless it is open.
+resume_chat() {
+  local id="$1" running="$2"
+  if grep -qx "$id" <<<"$running"; then
+    echo "${id:0:8} is already running"
+    return
+  fi
+  (cd "$WORKDIR" && env -u ANTHROPIC_API_KEY -u ANTHROPIC_AUTH_TOKEN {% if not claude_code.auto_update %}DISABLE_AUTOUPDATER=1 {% endif %}\
+    "$CLAUDE" --bg --resume "$id" --remote-control --permission-mode "$PERMISSION_MODE") | head -1
+}
+
+resume() {
+  local running f id arg match
+  local -a files
+  mapfile -t files < <(transcripts)
+  if [ $# -eq 0 ]; then
+    list_chats
+    echo
+    echo "Reopen with: $(basename "$0") resume <number|id>...  or  resume all"
+    return
+  fi
+  running=$(running_ids)
+  if [ "$1" = "all" ]; then
+    for f in "${files[@]}"; do
+      if [ -n "$(find "$f" -mtime "-$RESUME_DAYS")" ]; then
+        resume_chat "$(basename "$f" .jsonl)" "$running"
+      fi
+    done
+    return
+  fi
+  for arg in "$@"; do
+    match=""
+    if [[ "$arg" =~ ^[0-9]+$ ]] && [ "$arg" -ge 1 ]; then
+      match="${files[$((arg - 1))]:-}"
+    else
+      for f in "${files[@]}"; do
+        id=$(basename "$f" .jsonl)
+        if [[ "$id" == "$arg"* ]]; then match="$f"; break; fi
+      done
+    fi
+    if [ -z "$match" ]; then
+      echo "No saved chat matches '$arg'" >&2
+      exit 1
+    fi
+    resume_chat "$(basename "$match" .jsonl)" "$running"
+  done
+}
+
 case "${1:-attach}" in
   attach)
     start
@@ -46,6 +131,10 @@ case "${1:-attach}" in
     if running; then
       tmux kill-session -t "$SESSION"
     fi
+    ;;
+  resume)
+    shift
+    resume "$@"
     ;;
   status)
     if running; then
