@@ -168,8 +168,9 @@ risky ones such as force pushes or `terraform destroy`. Once you are
 logged in, the server starts when the container boots. Set `autostart: no` to
 start it by hand instead. `claude-rc` requires `install.tmux`.
 
-Open sessions only reconnect if the server restarts within about 15 minutes,
-so after a longer outage they drop off claude.ai. Their history is still saved.
+Open sessions reconnect if the server restarts within about 4 hours, so a
+short outage or reboot keeps them. After a longer one they drop off
+claude.ai, but their history is still saved.
 `claude-rc resume` lists the saved chats in the workdir, and
 `claude-rc resume <number|id>...` reopens them in the background with Remote
 Control on, so they show up in the app again. `claude-rc resume all` reopens
