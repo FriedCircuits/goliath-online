@@ -1,0 +1,4 @@
+#!/command/with-contenv sh
+# s6 runs as {{ user }}, sshd needs root.
+sudo mkdir -p /run/sshd
+exec sudo /usr/sbin/sshd -D -e

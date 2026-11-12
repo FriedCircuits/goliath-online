@@ -1,0 +1,14 @@
+#!/command/with-contenv bash
+# Wait for code-server to listen, it writes the password on first start.
+for _ in $(seq 1 120); do
+  if (exec 3<>/dev/tcp/127.0.0.1/8443) 2>/dev/null; then
+    echo "code-server: {% if codeserver.cert %}https{% else %}http{% endif %} on port 8443"
+{% if codeserver.auth %}
+    echo "password: $(sed -n 's/^password: //p' /home/{{ user }}/.config/code-server/config.yaml)"
+{% endif %}
+    exit 0
+  fi
+  sleep 1
+done
+# Not fatal, s6 keeps restarting code-server and the rest of the container still works.
+echo "ERROR: code-server is not listening on port 8443 after 120s, see docker logs" >&2

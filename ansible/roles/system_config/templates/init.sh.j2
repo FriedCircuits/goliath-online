@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/command/with-contenv bash
+# Runs once at startup, before the services start.
+set -eu
+
 {% if install.ssh_server %}
 # Keep the SSH host keys in the home volume so a rebuilt image keeps the
 # same fingerprint. The first start generates them.
@@ -15,7 +18,6 @@ else
   sudo cp /etc/ssh/ssh_host_* "$HOST_KEYS"/
   sudo chown "$(id -u):$(id -g)" "$HOST_KEYS"/ssh_host_*
 fi
-sudo service ssh restart > /dev/null 2>&1
 {% endif %}
 
 {% if install.claude_code %}
@@ -55,9 +57,9 @@ if [ -S /var/run/docker.sock ]; then
 fi
 {% endif %}
 
-NOCOLOR='\033[0m'
-LOGO='\033[0;35m'
-TEXT='\033[0;32m'
+NOCOLOR=$'\033[0m'
+LOGO=$'\033[0;35m'
+TEXT=$'\033[0;32m'
 echo "${LOGO}"
 
 echo " _____       _ _       _   _         ${TEXT}version: {{ version }}${LOGO}"
@@ -75,28 +77,3 @@ echo ' \___/|_| |_|     \_____/_|_| |_|\___|'
 echo
 
 echo " ${NOCOLOR}"
-
-{% if install.codeserver %}
-nohup code-server {% if not codeserver.auth %}--auth none{% endif %} {% if codeserver.cert %}--cert{% endif %} --bind-addr 0.0.0.0:8443 /home/{{ user }} >> /tmp/code-server.out 2>> /tmp/code-server.err &
-# Wait for code-server to listen, it writes the password on first start.
-i=0
-while [ $i -lt 60 ] && ! grep -qs "server listening on" /tmp/code-server.out /tmp/code-server.err; do
-  sleep 1
-  i=$((i + 1))
-done
-# Settings come from the flags above, which override config.yaml.
-echo "code-server: {% if codeserver.cert %}https{% else %}http{% endif %} on port 8443"
-{% if codeserver.auth %}
-echo "password: $(sed -n 's/^password: //p' /home/{{ user }}/.config/code-server/config.yaml)"
-{% endif %}
-{% endif %}
-
-{% if install.claude_code and install.tmux and claude_code.remote_control.autostart %}
-if [ -f "${CLAUDE_CONFIG_DIR:-/home/{{ user }}/.claude}/.credentials.json" ]; then
-  /usr/local/bin/claude-rc start
-else
-  echo "Claude Remote Control: run 'claude auth login', then 'claude-rc' to finish setup"
-fi
-{% endif %}
-
-exec "$@"
