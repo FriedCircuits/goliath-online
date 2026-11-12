@@ -15,16 +15,26 @@
 - name: Gruntwork | Install
   command: /tmp/bootstrap-gruntwork-installer.sh --version {{ gruntwork_latest['tag'] }}
 
-- name: Gruntwork | Get latest kubergrunt
-  github_release:
-    user: gruntwork-io
-    repo: kubergrunt
-    action: latest_release
-    token: "{{ github_token | default(omit) }}"
-  register: kubergrunt_latest
+# The latest release can be published before its binaries, as v0.19.1 was.
+- name: Gruntwork | Get kubergrunt releases
+  uri:
+    url: https://api.github.com/repos/gruntwork-io/kubergrunt/releases?per_page=10
+    headers: "{{ {'Authorization': 'Bearer ' + github_token} if github_token | default('') else {} }}"
+  register: kubergrunt_releases
+  when: install.kubernetes_cli
+
+- name: Gruntwork | Pick newest kubergrunt with a Linux binary
+  set_fact:
+    kubergrunt_tag: >-
+      {%- for r in kubergrunt_releases.json if not r.draft and not r.prerelease
+          and ('kubergrunt_linux_' ~ ('arm64' if ansible_facts['architecture'] == 'aarch64' else 'amd64')) in (r.assets | map(attribute='name')) -%}
+      {%- if loop.first %}{{ r.tag_name }}{% endif -%}
+      {%- endfor -%}
+  failed_when: not kubergrunt_tag
+  when: install.kubernetes_cli
 
 - name: Gruntwork | Install kubergrunt
-  command: gruntwork-install --binary-name "kubergrunt" --repo "https://github.com/gruntwork-io/kubergrunt" --tag "{{ kubergrunt_latest['tag'] }}"
+  command: gruntwork-install --binary-name "kubergrunt" --repo "https://github.com/gruntwork-io/kubergrunt" --tag "{{ kubergrunt_tag }}"
   environment:
     GITHUB_OAUTH_TOKEN: "{{ github_token | default(omit) }}"
   when: install.kubernetes_cli
