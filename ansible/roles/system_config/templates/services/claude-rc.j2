@@ -1,0 +1,5 @@
+#!/command/with-contenv bash
+if [ -f "${CLAUDE_CONFIG_DIR:-/home/{{ user }}/.claude}/.credentials.json" ]; then
+  exec /usr/local/bin/claude-rc start
+fi
+echo "Claude Remote Control: run 'claude auth login', then 'claude-rc' to finish setup"

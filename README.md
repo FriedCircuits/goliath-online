@@ -207,6 +207,19 @@ Desktop on macOS.
 SSH is published on port 2222 by default so it does not clash with an SSH
 server on the host. Change `SSH_PORT` and `CODE_SERVER_PORT` in `build.cfg`.
 
+### Services
+
+[s6-overlay](https://github.com/just-containers/s6-overlay) runs as PID 1. At
+startup it runs `/etc/goliath/init.sh`, then starts sshd, code-server and
+`claude-rc` for the enabled features. It restarts sshd and code-server if they
+exit, and cleans up processes left behind by builds and tools, which would
+otherwise pile up as zombies until the container runs out of PIDs. Service
+output goes to `docker logs`. If the startup script fails, the container stops
+instead of running half set up.
+
+s6 runs as the build user, so `docker exec` still opens a shell as that user.
+Check a service with `/command/s6-svstat /run/service/sshd`.
+
 ***
 
 ## Referances

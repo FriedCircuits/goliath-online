@@ -64,9 +64,5 @@
     src: ../../files/
     dest: "{{ home }}/"
 
-- name: Copy entrypoint
-  become: yes
-  ansible.builtin.template:
-    src: entrypoint.sh.j2
-    dest: /entrypoint.sh
-    mode: 0755
+- name: Services
+  include_tasks: services.yml

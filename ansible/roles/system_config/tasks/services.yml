@@ -1,0 +1,88 @@
+# s6-overlay runs these at startup, see /etc/s6-overlay/s6-rc.d.
+- name: Services | Pick enabled services
+  set_fact:
+    services:
+      - { name: goliath-init, type: oneshot, script: /etc/goliath/init.sh, after: base, enabled: true }
+      - { name: sshd, type: longrun, after: goliath-init, enabled: "{{ install.ssh_server }}" }
+      - { name: code-server, type: longrun, after: goliath-init, enabled: "{{ install.codeserver }}" }
+      - { name: code-server-info, type: oneshot, after: code-server, enabled: "{{ install.codeserver }}" }
+      - { name: claude-rc, type: oneshot, after: goliath-init, down: /usr/local/bin/claude-rc stop,
+          enabled: "{{ install.claude_code and install.tmux and claude_code.remote_control.autostart }}" }
+
+- name: Services | Create script directory
+  become: yes
+  file:
+    path: /etc/goliath/services
+    state: directory
+
+- name: Services | Install startup script
+  become: yes
+  template:
+    src: init.sh.j2
+    dest: /etc/goliath/init.sh
+    mode: 0755
+
+- name: Services | Install service scripts
+  become: yes
+  template:
+    src: "services/{{ item.name }}.j2"
+    dest: "/etc/goliath/services/{{ item.name }}"
+    mode: 0755
+  loop: "{{ services | selectattr('enabled') | rejectattr('script', 'defined') }}"
+
+- name: Services | Create service definitions
+  become: yes
+  file:
+    path: "/etc/s6-overlay/s6-rc.d/{{ item.name }}/dependencies.d"
+    state: directory
+  loop: "{{ services | selectattr('enabled') }}"
+
+- name: Services | Create user bundle
+  become: yes
+  file:
+    path: /etc/s6-overlay/user-bundles.d/user/contents.d
+    state: directory
+
+- name: Services | Set service types
+  become: yes
+  copy:
+    content: "{{ item.type }}\n"
+    dest: "/etc/s6-overlay/s6-rc.d/{{ item.name }}/type"
+  loop: "{{ services | selectattr('enabled') }}"
+
+- name: Services | Set service dependencies
+  become: yes
+  copy:
+    content: ""
+    dest: "/etc/s6-overlay/s6-rc.d/{{ item.name }}/dependencies.d/{{ item.after }}"
+  loop: "{{ services | selectattr('enabled') }}"
+
+# A longrun's run file is its script, a oneshot's up and down are execline lines.
+- name: Services | Link longrun scripts
+  become: yes
+  file:
+    src: "/etc/goliath/services/{{ item.name }}"
+    dest: "/etc/s6-overlay/s6-rc.d/{{ item.name }}/run"
+    state: link
+  loop: "{{ services | selectattr('enabled') | selectattr('type', 'equalto', 'longrun') }}"
+
+- name: Services | Set oneshot commands
+  become: yes
+  copy:
+    content: "{{ item.script | default('/etc/goliath/services/' + item.name) }}\n"
+    dest: "/etc/s6-overlay/s6-rc.d/{{ item.name }}/up"
+  loop: "{{ services | selectattr('enabled') | selectattr('type', 'equalto', 'oneshot') }}"
+
+- name: Services | Set oneshot stop commands
+  become: yes
+  copy:
+    content: "with-contenv {{ item.down }}\n"
+    dest: "/etc/s6-overlay/s6-rc.d/{{ item.name }}/down"
+  loop: "{{ services | selectattr('enabled') | selectattr('down', 'defined') }}"
+
+- name: Services | Start enabled services
+  become: yes
+  copy:
+    content: ""
+    dest: "/etc/s6-overlay/user-bundles.d/user/contents.d/{{ item.name }}"
+  loop: "{{ services | selectattr('enabled') }}"

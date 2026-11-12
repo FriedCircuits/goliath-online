@@ -1,0 +1,3 @@
+#!/command/with-contenv sh
+# Settings come from these flags, which override config.yaml.
+exec code-server {% if not codeserver.auth %}--auth none {% endif %}{% if codeserver.cert %}--cert {% endif %}--bind-addr 0.0.0.0:8443 /home/{{ user }} 2>&1
